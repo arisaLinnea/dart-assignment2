@@ -16,6 +16,13 @@ class OwnerRepository extends Repository<ResponseOwner> {
     return getList().firstWhere((element) => element.id == id);
   }
 
+  @override
+  ResponseOwner deserialize(Map<String, dynamic> json) =>
+      ResponseOwner.fromJson(json);
+
+  @override
+  Map<String, dynamic> serialize(ResponseOwner item) => item.toJson();
+
 // TODO rewrite to use jsonDecode instead?
   @override
   void readJsonFile(String filePath) async {

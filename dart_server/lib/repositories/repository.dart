@@ -1,5 +1,10 @@
 abstract class Repository<T> {
   final List<T> _list = [];
+
+  int getListLength() {
+    return _list.length;
+  }
+
   void addToList({required T item}) {
     _list.add(item);
   }
@@ -18,6 +23,10 @@ abstract class Repository<T> {
     T item = _list.elementAt(index);
     _list.remove(item);
   }
+
+  T deserialize(Map<String, dynamic> json);
+
+  Map<String, dynamic> serialize(T item);
 
   void readJsonFile(String filePath);
 }

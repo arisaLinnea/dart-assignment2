@@ -17,6 +17,13 @@ class VehicleRepository extends Repository<ResponseVehicle> {
   }
 
   @override
+  ResponseVehicle deserialize(Map<String, dynamic> json) =>
+      ResponseVehicle.fromJson(json);
+
+  @override
+  Map<String, dynamic> serialize(ResponseVehicle item) => item.toJson();
+
+  @override
   void readJsonFile(String filePath) {
     const JsonDecoder decoder = JsonDecoder();
     final storage = File(filePath);

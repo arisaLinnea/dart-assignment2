@@ -17,6 +17,13 @@ class ParkingRepository extends Repository<ResponseParking> {
   }
 
   @override
+  ResponseParking deserialize(Map<String, dynamic> json) =>
+      ResponseParking.fromJson(json);
+
+  @override
+  Map<String, dynamic> serialize(ResponseParking item) => item.toJson();
+
+  @override
   void readJsonFile(String filePath) {
     const JsonDecoder decoder = JsonDecoder();
     final storage = File(filePath);
