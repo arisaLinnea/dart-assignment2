@@ -6,7 +6,7 @@ import 'package:dart_client/repositories/repository.dart';
 
 class OwnerRepository extends Repository<Owner> {
   static final OwnerRepository _instance =
-      OwnerRepository._internal(path: 'owners');
+      OwnerRepository._internal(path: 'owner');
 
   OwnerRepository._internal({required super.path});
 

@@ -11,9 +11,9 @@ List<String> userOptions = [
   '5. Go back to start screen',
   'q. Quit',
 ];
+OwnerRepository repository = OwnerRepository();
 
 Future<void> ownerScreen() async {
-  OwnerRepository repository = OwnerRepository();
   int? userInput;
   clearScreen();
 
@@ -28,75 +28,17 @@ Future<void> ownerScreen() async {
     printGreeting('You chose: ${userOptions.elementAt(userInput - 1)}');
     switch (userInput) {
       case 1: // add owner
-        String name = checkInputStringValues(question: 'Name on new owner: ');
-        String ssn =
-            checkInputSsnValues(question: 'Ssn for new owner (YYMMDDNNNN): ');
-        Owner newOwner = Owner(name: name, ssn: ssn);
-        bool success = await repository.addToList(item: newOwner);
-        if (success) {
-          printAdd(newOwner.toString());
-        } else {
-          printError('Failed to save owner');
-        }
-        printContinue();
+        await showAddOwnerScreen();
         break;
       case 2: // list owner
-        List<Owner> ownerList = await repository.getList();
-        if (ownerList.isEmpty) {
-          print('The list of owners are empty');
-        } else {
-          for (var item in ownerList) {
-            print('* $item');
-          }
-        }
-        printContinue();
+        await showOwnerListScreen();
         break;
       case 3: // edit owner
-        List<Owner> ownerList = await repository.getList();
-        if (ownerList.isEmpty) {
-          print('There is no owners to edit.');
-        } else {
-          int editNo = checkIntOption(
-              question: 'What number do you want to edit? ',
-              maxNumber: ownerList.length,
-              userOptions: ownerList,
-              menu: false);
-          Owner editOwner =
-              Owner(name: 'name', ssn: 'ssn'); //ownerList[editNo - 1];
-          bool changeName =
-              checkBoolOption(question: 'Do you want to change name? (y?): ');
-          if (changeName) {
-            String name = checkInputStringValues(
-                question: 'What name to you want to change to?: ');
-            editOwner.name = name;
-          }
-          bool changeSsn =
-              checkBoolOption(question: 'Do you want to change ssn? (y?): ');
-          if (changeSsn) {
-            String ssn = checkInputSsnValues(
-                question: 'What ssn to you want to change to?: ');
-            editOwner.name = ssn;
-          }
-          repository.update(index: editNo - 1, item: editOwner);
-          printAction('Owner has been updated');
-        }
-        printContinue();
+        await showUpdateOwnerScreen();
         break;
       case 4: // remove owner
-        List<Owner> ownerList = await repository.getList();
-        if (ownerList.isEmpty) {
-          print('There is no owners to remove.');
-        } else {
-          int removeNo = checkIntOption(
-              question: 'What number do you want to remove? ',
-              maxNumber: ownerList.length,
-              menu: false,
-              userOptions: ownerList);
-          repository.remove(index: removeNo - 1);
-          printAction('List of owners has been updated.');
-        }
+        await showRemoveOwnerScreen();
 
-        printContinue();
         break;
       case 6:
         exitCli();
@@ -104,4 +46,85 @@ Future<void> ownerScreen() async {
         break;
     }
   }
+}
+
+Future<void> showAddOwnerScreen() async {
+  String name = checkInputStringValues(question: 'Name on new owner: ');
+  String ssn =
+      checkInputSsnValues(question: 'Ssn for new owner (YYMMDDNNNN): ');
+  Owner newOwner = Owner(name: name, ssn: ssn);
+  bool success = await repository.addToList(item: newOwner);
+  if (success) {
+    printAdd(newOwner.toString());
+  } else {
+    printError('Failed to save owner');
+  }
+  printContinue();
+}
+
+Future<void> showOwnerListScreen() async {
+  List<Owner> ownerList = await repository.getList();
+  if (ownerList.isEmpty) {
+    print('The list of owners are empty');
+  } else {
+    for (var item in ownerList) {
+      print('* $item');
+    }
+  }
+  printContinue();
+}
+
+Future<void> showUpdateOwnerScreen() async {
+  List<Owner> ownerList = await repository.getList();
+  if (ownerList.isEmpty) {
+    print('There is no owners to edit.');
+  } else {
+    int editNo = checkIntOption(
+        question: 'What number do you want to edit? ',
+        maxNumber: ownerList.length,
+        userOptions: ownerList,
+        menu: false);
+    Owner editOwner = Owner(name: 'name', ssn: 'ssn'); //ownerList[editNo - 1];
+    bool changeName =
+        checkBoolOption(question: 'Do you want to change name? (y?): ');
+    if (changeName) {
+      String name = checkInputStringValues(
+          question: 'What name to you want to change to?: ');
+      editOwner.name = name;
+    }
+    bool changeSsn =
+        checkBoolOption(question: 'Do you want to change ssn? (y?): ');
+    if (changeSsn) {
+      String ssn =
+          checkInputSsnValues(question: 'What ssn to you want to change to?: ');
+      editOwner.name = ssn;
+    }
+    bool success = await repository.update(index: editNo - 1, item: editOwner);
+    if (success) {
+      printAction('Owner has been updated');
+    } else {
+      printError('Failed to update owner');
+    }
+  }
+  printContinue();
+}
+
+Future<void> showRemoveOwnerScreen() async {
+  List<Owner> ownerList = await repository.getList();
+  if (ownerList.isEmpty) {
+    print('There is no owners to remove.');
+  } else {
+    int removeNo = checkIntOption(
+        question: 'What number do you want to remove? ',
+        maxNumber: ownerList.length,
+        menu: false,
+        userOptions: ownerList);
+    bool success = await repository.remove(index: removeNo - 1);
+    if (success) {
+      printAction('List of owners has been updated.');
+    } else {
+      printError('Failed to remove owner');
+    }
+  }
+  printContinue();
 }

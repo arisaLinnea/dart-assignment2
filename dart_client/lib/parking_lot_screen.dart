@@ -11,9 +11,9 @@ List<String> userOptions = [
   '5. Go back to start screen',
   'q. Quit',
 ];
+ParkingLotRepository repository = ParkingLotRepository();
 
 Future<void> parkingLotScreen() async {
-  ParkingLotRepository repository = ParkingLotRepository();
   int? userInput;
   clearScreen();
 
@@ -29,86 +29,16 @@ Future<void> parkingLotScreen() async {
     printGreeting('You chose: ${userOptions.elementAt(userInput - 1)}');
     switch (userInput) {
       case 1: // add parking lot
-        String streetName = checkInputStringValues(
-            question: 'Streetname and number for the parking lot: ');
-        String zipCode =
-            checkInputStringValues(question: 'Zipcode for the parking lot: ');
-        String city =
-            checkInputStringValues(question: 'City for the parking lot: ');
-        Address address = Address(streetName, zipCode, city);
-        double hourlyPrice =
-            checkDoubleOption(question: 'Hourly price for this parking lot: ');
-
-        ParkingLot newLot =
-            ParkingLot(address: address, hourlyPrice: hourlyPrice);
-        repository.addToList(item: newLot);
-        printAdd(newLot.toString());
-        printContinue();
+        await showAddParkingLotScreen();
         break;
       case 2: // list parking lots
-        List<ParkingLot> lotList = await repository.getList();
-        if (lotList.isEmpty) {
-          print('The list of parking lots are empty');
-        } else {
-          for (var item in lotList) {
-            print("* $item");
-          }
-        }
-        printContinue();
+        await showParkingLotListScreen();
         break;
       case 3: // edit parking lot
-        List<ParkingLot> lotList = await repository.getList();
-
-        if (lotList.isEmpty) {
-          print('There is no parking lots to edit.');
-        } else {
-          int editNo = checkIntOption(
-              question: 'What number do you want to edit? ',
-              maxNumber: lotList.length,
-              userOptions: lotList,
-              menu: false);
-          ParkingLot editLot = lotList[editNo - 1];
-
-          bool changeAddress = checkBoolOption(
-              question: 'Do you want to change address? (y?): ');
-          if (changeAddress) {
-            String streetName = checkInputStringValues(
-                question: 'Streetname and number for the parking lot: ');
-            String zipCode = checkInputStringValues(
-                question: 'Zipcode for the parking lot: ');
-            String city =
-                checkInputStringValues(question: 'City for the parking lot: ');
-            Address address = Address(streetName, zipCode, city);
-            editLot.address = address;
-          }
-          bool changePrice = checkBoolOption(
-              question: 'Do you want to change hourly price (y?): ');
-          if (changePrice) {
-            double hourlyPrice = checkDoubleOption(
-                question: 'Hourly price for this parking lot: ');
-            editLot.hourlyPrice = hourlyPrice;
-          }
-
-          repository.update(index: editNo - 1, item: editLot);
-          printAction('Parking lot has been updated');
-        }
-        printContinue();
+        await showUpdateParkingLotScreen();
         break;
       case 4: // remove parking lot
-        List<ParkingLot> lotList = await repository.getList();
-        if (lotList.isEmpty) {
-          print('There is no parking lots to remove.');
-        } else {
-          int removeNo = checkIntOption(
-              question: 'What number do you want to remove? ',
-              maxNumber: lotList.length,
-              userOptions: lotList,
-              menu: false);
-          repository.remove(index: removeNo - 1);
-          printAction('List of parking lots has been updated.');
-        }
-
-        printContinue();
+        await showRemoveParkingLotScreen();
         break;
       case 6:
         exitCli();
@@ -116,4 +46,88 @@ Future<void> parkingLotScreen() async {
         break;
     }
   }
+}
+
+Future<void> showAddParkingLotScreen() async {
+  String streetName = checkInputStringValues(
+      question: 'Streetname and number for the parking lot: ');
+  String zipCode =
+      checkInputStringValues(question: 'Zipcode for the parking lot: ');
+  String city = checkInputStringValues(question: 'City for the parking lot: ');
+  Address address = Address(streetName, zipCode, city);
+  double hourlyPrice =
+      checkDoubleOption(question: 'Hourly price for this parking lot: ');
+
+  ParkingLot newLot = ParkingLot(address: address, hourlyPrice: hourlyPrice);
+  await repository.addToList(item: newLot);
+  printAdd(newLot.toString());
+  printContinue();
+}
+
+Future<void> showParkingLotListScreen() async {
+  List<ParkingLot> lotList = await repository.getList();
+  if (lotList.isEmpty) {
+    print('The list of parking lots are empty');
+  } else {
+    for (var item in lotList) {
+      print("* $item");
+    }
+  }
+  printContinue();
+}
+
+Future<void> showUpdateParkingLotScreen() async {
+  List<ParkingLot> lotList = await repository.getList();
+
+  if (lotList.isEmpty) {
+    print('There is no parking lots to edit.');
+  } else {
+    int editNo = checkIntOption(
+        question: 'What number do you want to edit? ',
+        maxNumber: lotList.length,
+        userOptions: lotList,
+        menu: false);
+    ParkingLot editLot = lotList[editNo - 1];
+
+    bool changeAddress =
+        checkBoolOption(question: 'Do you want to change address? (y?): ');
+    if (changeAddress) {
+      String streetName = checkInputStringValues(
+          question: 'Streetname and number for the parking lot: ');
+      String zipCode =
+          checkInputStringValues(question: 'Zipcode for the parking lot: ');
+      String city =
+          checkInputStringValues(question: 'City for the parking lot: ');
+      Address address = Address(streetName, zipCode, city);
+      editLot.address = address;
+    }
+    bool changePrice =
+        checkBoolOption(question: 'Do you want to change hourly price (y?): ');
+    if (changePrice) {
+      double hourlyPrice =
+          checkDoubleOption(question: 'Hourly price for this parking lot: ');
+      editLot.hourlyPrice = hourlyPrice;
+    }
+
+    repository.update(index: editNo - 1, item: editLot);
+    printAction('Parking lot has been updated');
+  }
+  printContinue();
+}
+
+Future<void> showRemoveParkingLotScreen() async {
+  List<ParkingLot> lotList = await repository.getList();
+  if (lotList.isEmpty) {
+    print('There is no parking lots to remove.');
+  } else {
+    int removeNo = checkIntOption(
+        question: 'What number do you want to remove? ',
+        maxNumber: lotList.length,
+        userOptions: lotList,
+        menu: false);
+    repository.remove(index: removeNo - 1);
+    printAction('List of parking lots has been updated.');
+  }
+
+  printContinue();
 }

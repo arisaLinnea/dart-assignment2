@@ -70,7 +70,7 @@ void clearScreen() {
   // might not work on all platforms
   // print(Process.runSync("clear", [], runInShell: true).stdout);
 
-  // stdout.writeln('\x1B[2J\x1B[0;0H'); //safe on both mac and windows
+  stdout.writeln('\x1B[2J\x1B[0;0H'); //safe on both mac and windows
 }
 
 void exitCli() {

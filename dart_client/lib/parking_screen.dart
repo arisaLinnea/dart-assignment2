@@ -17,16 +17,17 @@ List<String> userOptions = [
   '5. Go back to start screen',
   'q. Quit',
 ];
+List<Vehicle> vehicleList = [];
+List<ParkingLot> lotList = [];
+ParkingRepository repository = ParkingRepository();
+VehicleRepository vehicleRepository = VehicleRepository();
+ParkingLotRepository parkingLotRepository = ParkingLotRepository();
 
-void parkingScreen() async {
-  ParkingRepository repository = ParkingRepository();
-  VehicleRepository vehicleRepository = VehicleRepository();
-  ParkingLotRepository parkingLotRepository = ParkingLotRepository();
+Future<void> parkingScreen() async {
+  vehicleList = await vehicleRepository.getList();
+  lotList = await parkingLotRepository.getList();
   int? userInput;
   clearScreen();
-
-  List<Vehicle> vehicleList = await vehicleRepository.getList();
-  List<ParkingLot> lotList = await parkingLotRepository.getList();
 
   while (userInput != 5) {
     printGreeting('You can now administrate parkings. What do you wanna do?');
@@ -47,15 +48,6 @@ void parkingScreen() async {
           userInput = 5;
           break;
         }
-        printListInfo('This is the vehicles you can add:');
-        int vehicleIndex = checkIntOption(
-            question:
-                'Enter number of the vehicle you would like to add to this parking: ',
-            maxNumber: vehicleList.length,
-            userOptions: vehicleList,
-            menu: false);
-        Vehicle vehicle = vehicleList[vehicleIndex - 1];
-
         if (lotList.isEmpty) {
           print(
               'To add a parking you need a parking lot. Press any key to go back to main menu and choose to add a parking lot.');
@@ -64,130 +56,16 @@ void parkingScreen() async {
           userInput = 5;
           break;
         }
-        printListInfo('This is the parking lots you can add:');
-        int lotIndex = checkIntOption(
-            question:
-                'Enter number of the parking lot you would like to add to this parking: ',
-            maxNumber: lotList.length,
-            userOptions: lotList,
-            menu: false);
-        ParkingLot parkingLot = lotList[lotIndex - 1];
-
-        DateTime startTime = DateTime.now();
-
-        bool setEndDate =
-            checkBoolOption(question: 'Do you want to set an end time (y?): ');
-        DateTime? endTime;
-        if (setEndDate) {
-          int setHours = checkHourOption(
-              question:
-                  "How many hours from now do you want the parking to end? (0 for now): ");
-          int setMinutes = checkHourOption(
-              question:
-                  "How many minutes from now (+ $setHours hours) do you want the parking to end? (0 for now): ");
-          endTime = DateTime.now()
-              .add(Duration(hours: setHours, minutes: setMinutes));
-        }
-
-        Parking newParking = Parking(
-            vehicle: vehicle,
-            parkinglot: parkingLot,
-            startTime: startTime,
-            endTime: endTime);
-        repository.addToList(item: newParking);
-        printAdd(newParking.toString());
-        printContinue();
+        await addParkingScreen();
         break;
       case 2: // list parkings
-        List<Parking> parkingList = await repository.getList();
-        if (parkingList.isEmpty) {
-          print('The list of parkings are empty');
-        } else {
-          for (var item in parkingList) {
-            print("* $item");
-          }
-        }
-        printContinue();
+        await showParkingListScreen();
         break;
       case 3: // edit parking lot
-        List<Parking> parkingList = await repository.getList();
-        if (parkingList.isEmpty) {
-          print('There is no parkings to edit.');
-        } else {
-          int editNo = checkIntOption(
-              question: 'What number do you want to edit? ',
-              maxNumber: parkingList.length,
-              userOptions: parkingList,
-              menu: false);
-          Parking editParking = parkingList[editNo - 1];
-
-          bool changeVehicle = checkBoolOption(
-              question: 'Do you want to change vehicle? (y?): ');
-          if (changeVehicle) {
-            if (vehicleList.isEmpty) {
-              print('No vehicle to change to');
-            } else {
-              int vehicleIndex = checkIntOption(
-                  question:
-                      'Enter number of the vehicle you would like to add to this vehicle: ',
-                  maxNumber: vehicleList.length,
-                  userOptions: vehicleList,
-                  menu: false);
-              Vehicle vehicle = vehicleList[vehicleIndex - 1];
-              editParking.vehicle = vehicle;
-            }
-          }
-
-          bool changeLot = checkBoolOption(
-              question: 'Do you want to change parking lot? (y?): ');
-          if (changeLot) {
-            if (lotList.isEmpty) {
-              print('No parking lot to change to');
-            } else {
-              int lotIndex = checkIntOption(
-                  question:
-                      'Enter number of the parking lot you would like to add to this vehicle: ',
-                  maxNumber: lotList.length,
-                  userOptions: lotList,
-                  menu: false);
-              ParkingLot parkinglot = lotList[lotIndex - 1];
-              editParking.parkingLot = parkinglot;
-            }
-          }
-          // antar att starttid inte kan ändras (isf får man ta bort befintlig och starta en ny)
-          bool changeEndTime = checkBoolOption(
-              question: 'Do you want to change end time? (y?): ');
-          if (changeEndTime) {
-            int setHours = checkHourOption(
-                question:
-                    "How many hours from now do you want the parking to end? (0 for now): ");
-            int setMinutes = checkHourOption(
-                question:
-                    "How many minutes from now (+ $setHours) do you want the parking to end? (0 for now): ");
-            DateTime endTime = DateTime.now()
-                .add(Duration(hours: setHours, minutes: setMinutes));
-            editParking.endTime = endTime;
-          }
-          repository.update(index: editNo - 1, item: editParking);
-          printAction('Parking lot has been updated');
-        }
-        printContinue();
+        await showUpdateParkingScreen();
         break;
       case 4: // remove parking
-        List<Parking> parkingList = await repository.getList();
-        if (parkingList.isEmpty) {
-          print('There is no parkings to remove.');
-        } else {
-          int removeNo = checkIntOption(
-              question: 'What number do you want to remove? ',
-              maxNumber: parkingList.length,
-              userOptions: lotList,
-              menu: false);
-          repository.remove(index: removeNo - 1);
-          printAction('List of parkings has been updated.');
-        }
-
-        printContinue();
+        await showRemoveParkingScreen();
         break;
       case 6:
         exitCli();
@@ -195,4 +73,143 @@ void parkingScreen() async {
         break;
     }
   }
+}
+
+Future<void> addParkingScreen() async {
+  printListInfo('This is the vehicles you can add:');
+  int vehicleIndex = checkIntOption(
+      question:
+          'Enter number of the vehicle you would like to add to this parking: ',
+      maxNumber: vehicleList.length,
+      userOptions: vehicleList,
+      menu: false);
+  Vehicle vehicle = vehicleList[vehicleIndex - 1];
+
+  printListInfo('This is the parking lots you can add:');
+  int lotIndex = checkIntOption(
+      question:
+          'Enter number of the parking lot you would like to add to this parking: ',
+      maxNumber: lotList.length,
+      userOptions: lotList,
+      menu: false);
+  ParkingLot parkingLot = lotList[lotIndex - 1];
+
+  DateTime startTime = DateTime.now();
+
+  bool setEndDate =
+      checkBoolOption(question: 'Do you want to set an end time (y?): ');
+  DateTime? endTime;
+  if (setEndDate) {
+    int setHours = checkHourOption(
+        question:
+            "How many hours from now do you want the parking to end? (0 for now): ");
+    int setMinutes = checkHourOption(
+        question:
+            "How many minutes from now (+ $setHours hours) do you want the parking to end? (0 for now): ");
+    endTime =
+        DateTime.now().add(Duration(hours: setHours, minutes: setMinutes));
+  }
+
+  Parking newParking = Parking(
+      vehicle: vehicle,
+      parkinglot: parkingLot,
+      startTime: startTime,
+      endTime: endTime);
+  await repository.addToList(item: newParking);
+  printAdd(newParking.toString());
+  printContinue();
+}
+
+Future<void> showParkingListScreen() async {
+  List<Parking> parkingList = await repository.getList();
+  if (parkingList.isEmpty) {
+    print('The list of parkings are empty');
+  } else {
+    for (var item in parkingList) {
+      print("* $item");
+    }
+  }
+  printContinue();
+}
+
+Future<void> showUpdateParkingScreen() async {
+  List<Parking> parkingList = await repository.getList();
+  if (parkingList.isEmpty) {
+    print('There is no parkings to edit.');
+  } else {
+    int editNo = checkIntOption(
+        question: 'What number do you want to edit? ',
+        maxNumber: parkingList.length,
+        userOptions: parkingList,
+        menu: false);
+    Parking editParking = parkingList[editNo - 1];
+
+    bool changeVehicle =
+        checkBoolOption(question: 'Do you want to change vehicle? (y?): ');
+    if (changeVehicle) {
+      if (vehicleList.isEmpty) {
+        print('No vehicle to change to');
+      } else {
+        int vehicleIndex = checkIntOption(
+            question:
+                'Enter number of the vehicle you would like to add to this vehicle: ',
+            maxNumber: vehicleList.length,
+            userOptions: vehicleList,
+            menu: false);
+        Vehicle vehicle = vehicleList[vehicleIndex - 1];
+        editParking.vehicle = vehicle;
+      }
+    }
+
+    bool changeLot =
+        checkBoolOption(question: 'Do you want to change parking lot? (y?): ');
+    if (changeLot) {
+      if (lotList.isEmpty) {
+        print('No parking lot to change to');
+      } else {
+        int lotIndex = checkIntOption(
+            question:
+                'Enter number of the parking lot you would like to add to this vehicle: ',
+            maxNumber: lotList.length,
+            userOptions: lotList,
+            menu: false);
+        ParkingLot parkinglot = lotList[lotIndex - 1];
+        editParking.parkingLot = parkinglot;
+      }
+    }
+    // antar att starttid inte kan ändras (isf får man ta bort befintlig och starta en ny)
+    bool changeEndTime =
+        checkBoolOption(question: 'Do you want to change end time? (y?): ');
+    if (changeEndTime) {
+      int setHours = checkHourOption(
+          question:
+              "How many hours from now do you want the parking to end? (0 for now): ");
+      int setMinutes = checkHourOption(
+          question:
+              "How many minutes from now (+ $setHours) do you want the parking to end? (0 for now): ");
+      DateTime endTime =
+          DateTime.now().add(Duration(hours: setHours, minutes: setMinutes));
+      editParking.endTime = endTime;
+    }
+    await repository.update(index: editNo - 1, item: editParking);
+    printAction('Parking lot has been updated');
+  }
+  printContinue();
+}
+
+Future<void> showRemoveParkingScreen() async {
+  List<Parking> parkingList = await repository.getList();
+  if (parkingList.isEmpty) {
+    print('There is no parkings to remove.');
+  } else {
+    int removeNo = checkIntOption(
+        question: 'What number do you want to remove? ',
+        maxNumber: parkingList.length,
+        userOptions: lotList,
+        menu: false);
+    await repository.remove(index: removeNo - 1);
+    printAction('List of parkings has been updated.');
+  }
+
+  printContinue();
 }

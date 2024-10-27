@@ -6,7 +6,7 @@ import 'package:dart_client/repositories/repository.dart';
 
 class ParkingLotRepository extends Repository<ParkingLot> {
   static final ParkingLotRepository _instance =
-      ParkingLotRepository._internal(path: '');
+      ParkingLotRepository._internal(path: 'parkinglot');
 
   ParkingLotRepository._internal({required super.path});
 

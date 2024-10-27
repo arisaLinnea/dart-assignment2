@@ -6,7 +6,7 @@ import 'package:dart_client/repositories/repository.dart';
 
 class VehicleRepository extends Repository<Vehicle> {
   static final VehicleRepository _instance =
-      VehicleRepository._internal(path: '');
+      VehicleRepository._internal(path: 'vehicle');
 
   VehicleRepository._internal({required super.path});
 
@@ -35,5 +35,11 @@ class VehicleRepository extends Repository<Vehicle> {
   Vehicle deserialize(Map<String, dynamic> json) => Vehicle.fromJson(json);
 
   @override
-  Map<String, dynamic> serialize(Vehicle item) => item.toJson();
+  Map<String, dynamic> serialize(Vehicle item) {
+    print('serialize client: ${item.toString()}');
+    Map<String, dynamic> s = item.toJson();
+    print('toJson client: $s');
+
+    return s;
+  }
 }

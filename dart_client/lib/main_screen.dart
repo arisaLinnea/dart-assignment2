@@ -56,13 +56,13 @@ void createParkingCli() async {
         await ownerScreen();
         break;
       case 2:
-        vehicleScreen();
+        await vehicleScreen();
         break;
       case 3:
-        parkingLotScreen();
+        await parkingLotScreen();
         break;
       case 4:
-        parkingScreen();
+        await parkingScreen();
         break;
       default:
         break;
