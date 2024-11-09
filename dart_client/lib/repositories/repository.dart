@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 abstract class Repository<T> {
-  List<T> list = [];
   final String _path;
 
   Uri uri = Uri(scheme: 'http', host: 'localhost', port: 8080);
@@ -25,7 +24,6 @@ abstract class Repository<T> {
     } else {
       throw Exception('Failed to add to list');
     }
-    // list.add(item);
   }
 
   Future<List<T>> getList() async {
@@ -37,44 +35,33 @@ abstract class Repository<T> {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      print('getList: $json');
       return (json as List).map((item) => deserialize(item)).toList();
     } else {
       throw Exception('Failed to get list');
     }
-
-    //return list;
   }
 
-  Future<bool> update({required int index, required T item}) async {
-    Uri updatedUri = uri.replace(path: '/api/$_path/$index');
+  Future<bool> update({required String id, required T item}) async {
+    Uri updatedUri = uri.replace(path: '/api/$_path/$id');
     final response = await http.put(updatedUri,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(serialize(item)));
-    print('GetList response ${response.statusCode}   ${response.body}');
     if (response.statusCode == 200) {
       return true;
     } else {
       throw Exception('Failed to update');
     }
-
-    // list[index] = item;
   }
 
-  Future<bool> remove({required int index}) async {
-    Uri updatedUri = uri.replace(path: '/api/$_path/$index');
-
+  Future<bool> remove({required String id}) async {
+    Uri updatedUri = uri.replace(path: '/api/$_path/$id');
     final response = await http
         .delete(updatedUri, headers: {'Content-Type': 'application/json'});
-
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to add to list');
+      throw Exception('Failed to remove from list');
     }
-
-    // T item = list.elementAt(index);
-    // list.remove(item);
   }
 
   Future<void> readJsonFile(String filePath);

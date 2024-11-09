@@ -1,4 +1,4 @@
-import 'package:dart_client/models/owner.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/owner_repository.dart';
 import 'package:dart_client/utils/effects.dart';
 import 'package:dart_client/utils/menu_choices.dart';
@@ -97,9 +97,10 @@ Future<void> showUpdateOwnerScreen() async {
     if (changeSsn) {
       String ssn =
           checkInputSsnValues(question: 'What ssn to you want to change to?: ');
-      editOwner.name = ssn;
+      editOwner.ssn = ssn;
     }
-    bool success = await repository.update(index: editNo - 1, item: editOwner);
+    String editId = ownerList[editNo - 1].id;
+    bool success = await repository.update(id: editId, item: editOwner);
     if (success) {
       printAction('Owner has been updated');
     } else {
@@ -119,7 +120,8 @@ Future<void> showRemoveOwnerScreen() async {
         maxNumber: ownerList.length,
         menu: false,
         userOptions: ownerList);
-    bool success = await repository.remove(index: removeNo - 1);
+    String removeId = ownerList[removeNo - 1].id;
+    bool success = await repository.remove(id: removeId);
     if (success) {
       printAction('List of owners has been updated.');
     } else {

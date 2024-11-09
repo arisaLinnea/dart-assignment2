@@ -1,4 +1,4 @@
-import 'package:dart_client/models/parkinglot.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/parking_lot_repository.dart';
 import 'package:dart_client/utils/effects.dart';
 import 'package:dart_client/utils/menu_choices.dart';
@@ -54,7 +54,7 @@ Future<void> showAddParkingLotScreen() async {
   String zipCode =
       checkInputStringValues(question: 'Zipcode for the parking lot: ');
   String city = checkInputStringValues(question: 'City for the parking lot: ');
-  Address address = Address(streetName, zipCode, city);
+  Address address = Address(street: streetName, zipCode: zipCode, city: city);
   double hourlyPrice =
       checkDoubleOption(question: 'Hourly price for this parking lot: ');
 
@@ -98,7 +98,11 @@ Future<void> showUpdateParkingLotScreen() async {
           checkInputStringValues(question: 'Zipcode for the parking lot: ');
       String city =
           checkInputStringValues(question: 'City for the parking lot: ');
-      Address address = Address(streetName, zipCode, city);
+      Address address = Address(
+          id: editLot.address.id,
+          street: streetName,
+          zipCode: zipCode,
+          city: city);
       editLot.address = address;
     }
     bool changePrice =
@@ -108,9 +112,13 @@ Future<void> showUpdateParkingLotScreen() async {
           checkDoubleOption(question: 'Hourly price for this parking lot: ');
       editLot.hourlyPrice = hourlyPrice;
     }
-
-    repository.update(index: editNo - 1, item: editLot);
-    printAction('Parking lot has been updated');
+    String editId = lotList[editNo - 1].id;
+    bool success = await repository.update(id: editId, item: editLot);
+    if (success) {
+      printAction('Parkinglot has been updated.');
+    } else {
+      printError('Failed to update parkinglot');
+    }
   }
   printContinue();
 }
@@ -125,8 +133,13 @@ Future<void> showRemoveParkingLotScreen() async {
         maxNumber: lotList.length,
         userOptions: lotList,
         menu: false);
-    repository.remove(index: removeNo - 1);
-    printAction('List of parking lots has been updated.');
+    String removeId = lotList[removeNo - 1].id;
+    bool success = await repository.remove(id: removeId);
+    if (success) {
+      printAction('List of parkinglots has been updated.');
+    } else {
+      printError('Failed to remove parkinglot');
+    }
   }
 
   printContinue();

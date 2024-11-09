@@ -3,8 +3,11 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:dart_server/models/response_owner.dart' as _i2;
-import 'package:dart_server/repositories/owner_repository.dart' as _i3;
+import 'dart:async' as _i5;
+
+import 'package:dart_server/db/database.dart' as _i2;
+import 'package:dart_server/repositories/owner_repository.dart' as _i4;
+import 'package:dart_shared/dart_shared.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -20,8 +23,19 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeResponseOwner_0 extends _i1.SmartFake implements _i2.ResponseOwner {
-  _FakeResponseOwner_0(
+class _FakeParkingDatabase_0 extends _i1.SmartFake
+    implements _i2.ParkingDatabase {
+  _FakeParkingDatabase_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeOwner_1 extends _i1.SmartFake implements _i3.Owner {
+  _FakeOwner_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -33,63 +47,63 @@ class _FakeResponseOwner_0 extends _i1.SmartFake implements _i2.ResponseOwner {
 /// A class which mocks [OwnerRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockOwnerRepository extends _i1.Mock implements _i3.OwnerRepository {
+class MockOwnerRepository extends _i1.Mock implements _i4.OwnerRepository {
   MockOwnerRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i2.ResponseOwner getElementById({required String? id}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getElementById,
-          [],
-          {#id: id},
-        ),
-        returnValue: _FakeResponseOwner_0(
+  _i2.ParkingDatabase get database => (super.noSuchMethod(
+        Invocation.getter(#database),
+        returnValue: _FakeParkingDatabase_0(
           this,
-          Invocation.method(
-            #getElementById,
-            [],
-            {#id: id},
-          ),
+          Invocation.getter(#database),
         ),
-      ) as _i2.ResponseOwner);
+      ) as _i2.ParkingDatabase);
 
   @override
-  _i2.ResponseOwner deserialize(Map<String, dynamic>? json) =>
-      (super.noSuchMethod(
+  void addToList({required dynamic json}) => super.noSuchMethod(
+        Invocation.method(
+          #addToList,
+          [],
+          {#json: json},
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i5.Future<List<Map<String, dynamic>>> getList() => (super.noSuchMethod(
+        Invocation.method(
+          #getList,
+          [],
+        ),
+        returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i5.Future<List<Map<String, dynamic>>>);
+
+  @override
+  _i3.Owner deserialize(Map<String, dynamic>? json) => (super.noSuchMethod(
         Invocation.method(
           #deserialize,
           [json],
         ),
-        returnValue: _FakeResponseOwner_0(
+        returnValue: _FakeOwner_1(
           this,
           Invocation.method(
             #deserialize,
             [json],
           ),
         ),
-      ) as _i2.ResponseOwner);
+      ) as _i3.Owner);
 
   @override
-  Map<String, dynamic> serialize(_i2.ResponseOwner? item) =>
-      (super.noSuchMethod(
+  Map<String, dynamic> serialize(_i2.DBOwner? item) => (super.noSuchMethod(
         Invocation.method(
           #serialize,
           [item],
         ),
         returnValue: <String, dynamic>{},
       ) as Map<String, dynamic>);
-
-  @override
-  void readJsonFile(String? filePath) => super.noSuchMethod(
-        Invocation.method(
-          #readJsonFile,
-          [filePath],
-        ),
-        returnValueForMissingStub: null,
-      );
 
   @override
   int getListLength() => (super.noSuchMethod(
@@ -101,28 +115,9 @@ class MockOwnerRepository extends _i1.Mock implements _i3.OwnerRepository {
       ) as int);
 
   @override
-  void addToList({required _i2.ResponseOwner? item}) => super.noSuchMethod(
-        Invocation.method(
-          #addToList,
-          [],
-          {#item: item},
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  List<_i2.ResponseOwner> getList() => (super.noSuchMethod(
-        Invocation.method(
-          #getList,
-          [],
-        ),
-        returnValue: <_i2.ResponseOwner>[],
-      ) as List<_i2.ResponseOwner>);
-
-  @override
   void update({
     required int? index,
-    required _i2.ResponseOwner? item,
+    required _i3.Owner? item,
   }) =>
       super.noSuchMethod(
         Invocation.method(

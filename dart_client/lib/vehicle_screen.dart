@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_client/models/owner.dart';
-import 'package:dart_client/models/vehicle.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/owner_repository.dart';
 import 'package:dart_client/repositories/vehicle_repository.dart';
 import 'package:dart_client/utils/effects.dart';
@@ -68,10 +67,11 @@ Future<void> showAddVehicleScreen() async {
   String registrationNo =
       checkInputRegNoValues(question: 'Registration number for new vehicle: ');
   printListInfo('This is the types you can add:');
+  var [_, ...vehicleType] = VehicleType.values;
   int vehicleTypeIndex = checkIntOption(
       question: 'Type for new vehicle: ',
       maxNumber: VehicleType.values.length,
-      userOptions: VehicleType.values,
+      userOptions: vehicleType,
       menu: false);
   VehicleType type = VehicleType.values[vehicleTypeIndex - 1];
   printListInfo('This is the owners you can add:');
@@ -82,7 +82,6 @@ Future<void> showAddVehicleScreen() async {
       userOptions: ownerList,
       menu: false);
   Owner vehicleOwner = ownerList[ownerIndex - 1];
-
   Vehicle newVehicle =
       Vehicle(registrationNo: registrationNo, type: type, owner: vehicleOwner);
   await repository.addToList(item: newVehicle);
@@ -124,10 +123,11 @@ Future<void> showUpdateVehicleScreen() async {
         checkBoolOption(question: 'Do you want to change type (y?): ');
     if (changeType) {
       printListInfo('This is the types you can add:');
+      var [_, ...vehicleType] = VehicleType.values;
       int vehicleTypeIndex = checkIntOption(
           question: 'What type to you want to change to?: ',
           maxNumber: VehicleType.values.length,
-          userOptions: VehicleType.values,
+          userOptions: vehicleType,
           menu: false);
       editVehicle.type = VehicleType.values[vehicleTypeIndex - 1];
     }
@@ -148,8 +148,13 @@ Future<void> showUpdateVehicleScreen() async {
         editVehicle.owner = vehicleOwner;
       }
     }
-    await repository.update(index: editNo - 1, item: editVehicle);
-    printAction('Vehicle has been updated');
+    String editId = vehicleList[editNo - 1].id;
+    bool success = await repository.update(id: editId, item: editVehicle);
+    if (success) {
+      printAction('Vehicle has been updated.');
+    } else {
+      printError('Failed to update vehicle');
+    }
   }
   printContinue();
 }
@@ -164,8 +169,13 @@ Future<void> showRemoveVehicleScreen() async {
         maxNumber: vehicleList.length,
         userOptions: vehicleList,
         menu: false);
-    await repository.remove(index: removeNo - 1);
-    printAction('List of vehicles has been updated.');
+    String removeId = vehicleList[removeNo - 1].id;
+    bool success = await repository.remove(id: removeId);
+    if (success) {
+      printAction('List of vehicles has been updated.');
+    } else {
+      printError('Failed to remove vehicle');
+    }
   }
 
   printContinue();

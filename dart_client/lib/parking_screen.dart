@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_client/models/parking.dart';
-import 'package:dart_client/models/parkinglot.dart';
-import 'package:dart_client/models/vehicle.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/parking_lot_repository.dart';
 import 'package:dart_client/repositories/parking_repository.dart';
 import 'package:dart_client/repositories/vehicle_repository.dart';
@@ -174,7 +172,7 @@ Future<void> showUpdateParkingScreen() async {
             userOptions: lotList,
             menu: false);
         ParkingLot parkinglot = lotList[lotIndex - 1];
-        editParking.parkingLot = parkinglot;
+        editParking.parkinglot = parkinglot;
       }
     }
     // antar att starttid inte kan ändras (isf får man ta bort befintlig och starta en ny)
@@ -191,8 +189,13 @@ Future<void> showUpdateParkingScreen() async {
           DateTime.now().add(Duration(hours: setHours, minutes: setMinutes));
       editParking.endTime = endTime;
     }
-    await repository.update(index: editNo - 1, item: editParking);
-    printAction('Parking lot has been updated');
+    String editId = parkingList[editNo - 1].id;
+    bool success = await repository.update(id: editId, item: editParking);
+    if (success) {
+      printAction('Parking has been updated.');
+    } else {
+      printError('Failed to update parking');
+    }
   }
   printContinue();
 }
@@ -205,10 +208,15 @@ Future<void> showRemoveParkingScreen() async {
     int removeNo = checkIntOption(
         question: 'What number do you want to remove? ',
         maxNumber: parkingList.length,
-        userOptions: lotList,
+        userOptions: parkingList,
         menu: false);
-    await repository.remove(index: removeNo - 1);
-    printAction('List of parkings has been updated.');
+    String removeId = parkingList[removeNo - 1].id;
+    bool success = await repository.remove(id: removeId);
+    if (success) {
+      printAction('List of parkings has been updated.');
+    } else {
+      printError('Failed to remove parking');
+    }
   }
 
   printContinue();

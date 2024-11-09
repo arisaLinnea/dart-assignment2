@@ -5,10 +5,6 @@ import 'package:dart_client/owner_screen.dart';
 import 'package:dart_client/parking_lot_screen.dart';
 import 'package:dart_client/parking_screen.dart';
 import 'package:dart_client/vehicle_screen.dart';
-import 'package:dart_client/repositories/owner_repository.dart';
-import 'package:dart_client/repositories/parking_lot_repository.dart';
-import 'package:dart_client/repositories/parking_repository.dart';
-import 'package:dart_client/repositories/vehicle_repository.dart';
 import 'package:dart_client/utils/effects.dart';
 import 'package:dart_client/utils/menu_choices.dart';
 
@@ -21,25 +17,8 @@ List<String> userOptions = [
 ];
 
 const JsonDecoder decoder = JsonDecoder();
-String filePath = 'db/storage.json';
-
-void readFromFile() {
-  OwnerRepository ownerRepository = OwnerRepository();
-  ownerRepository.readJsonFile(filePath);
-
-  VehicleRepository vehicleRepository = VehicleRepository();
-  vehicleRepository.readJsonFile(filePath);
-
-  ParkingLotRepository parkinglotRepository = ParkingLotRepository();
-  parkinglotRepository.readJsonFile(filePath);
-
-  ParkingRepository parkingRepository = ParkingRepository();
-  parkingRepository.readJsonFile(filePath);
-}
 
 void createParkingCli() async {
-  // readFromFile(); // Fix later
-
   clearScreen();
   printGreeting('Welcome to FindMeASpot!');
   int? userInput;

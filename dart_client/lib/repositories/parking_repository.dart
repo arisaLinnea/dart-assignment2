@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_client/models/parking.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/repository.dart';
 
 class ParkingRepository extends Repository<Parking> {
@@ -11,17 +11,6 @@ class ParkingRepository extends Repository<Parking> {
   ParkingRepository._internal({required super.path});
 
   factory ParkingRepository() => _instance;
-
-  @override
-  Future<Parking> getElementById({required String id}) async {
-    try {
-      return list.firstWhere((element) => element.id == id,
-          orElse: () => throw Exception('Parking not found'));
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
 
   @override
   Future<void> readJsonFile(String filePath) async {
@@ -42,4 +31,10 @@ class ParkingRepository extends Repository<Parking> {
 
   @override
   Map<String, dynamic> serialize(Parking item) => item.toJson();
+
+  @override
+  Future<Parking> getElementById({required String id}) {
+    // TODO: implement getElementById
+    throw UnimplementedError();
+  }
 }

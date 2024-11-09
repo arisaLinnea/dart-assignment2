@@ -1,32 +1,9 @@
 abstract class Repository<T> {
-  final List<T> _list = [];
+  void addToList({required dynamic json});
 
-  int getListLength() {
-    return _list.length;
-  }
+  Future<List<Map<String, dynamic>>> getList();
 
-  void addToList({required T item}) {
-    _list.add(item);
-  }
+  void update({required String id, required dynamic json});
 
-  List<T> getList() {
-    return _list;
-  }
-
-  T getElementById({required String id});
-
-  void update({required int index, required T item}) {
-    _list[index] = item;
-  }
-
-  void remove({required int index}) {
-    T item = _list.elementAt(index);
-    _list.remove(item);
-  }
-
-  T deserialize(Map<String, dynamic> json);
-
-  Map<String, dynamic> serialize(T item);
-
-  void readJsonFile(String filePath);
+  void remove({required String id});
 }

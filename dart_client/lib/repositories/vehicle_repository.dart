@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_client/models/vehicle.dart';
+import 'package:dart_shared/dart_shared.dart';
+
 import 'package:dart_client/repositories/repository.dart';
 
 class VehicleRepository extends Repository<Vehicle> {
@@ -13,8 +14,9 @@ class VehicleRepository extends Repository<Vehicle> {
   factory VehicleRepository() => _instance;
 
   @override
-  Future<Vehicle> getElementById({required String id}) async {
-    return list.firstWhere((element) => element.id == id);
+  Future<Vehicle> getElementById({required String id}) {
+    // TODO: implement getElementById
+    throw UnimplementedError();
   }
 
   @override

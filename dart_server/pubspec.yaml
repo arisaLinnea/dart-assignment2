@@ -2,6 +2,7 @@ name: dart_server
 description: A server app using the shelf package and Docker.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
+publish_to: none
 
 environment:
   sdk: ^3.0.6
@@ -15,6 +16,8 @@ dependencies:
   drift: ^2.6.0
   sqlite3: ^2.0.0
   path: ^1.8.0
+  dart_shared:
+    path: "../dart_shared"
 
 dev_dependencies:
   http: ^0.13.0

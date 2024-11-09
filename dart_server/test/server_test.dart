@@ -4,7 +4,6 @@ import 'package:dart_server/repositories/owner_repository.dart';
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:shelf_router/shelf_router.dart';
 import 'package:test/test.dart';
 
 import 'owner_mock.dart';

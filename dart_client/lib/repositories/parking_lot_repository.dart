@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_client/models/parkinglot.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/repository.dart';
 
 class ParkingLotRepository extends Repository<ParkingLot> {
@@ -13,20 +13,10 @@ class ParkingLotRepository extends Repository<ParkingLot> {
   factory ParkingLotRepository() => _instance;
 
   @override
-  Future<ParkingLot> getElementById({required String id}) async {
-    try {
-      return list.firstWhere((element) => element.id == id,
-          orElse: () => throw Exception('ParkingLot not found'));
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+  Future<ParkingLot> getElementById({required String id}) {
+    // TODO: implement getElementById
+    throw UnimplementedError();
   }
-
-  // @override
-  // Future<ParkingLot> getElementById({required String id}) {
-  //   return _list.firstWhere((element) => element.id == id);
-  // }
 
   @override
   Future<void> readJsonFile(String filePath) async {

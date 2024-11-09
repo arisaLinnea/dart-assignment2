@@ -8,7 +8,6 @@ Handler getRoutes(Repository repo) {
 
   // Get list
   router.get('/', (Request request) {
-    print("handler");
     return getListHandler(request, repo);
   });
 
@@ -18,18 +17,13 @@ Handler getRoutes(Repository repo) {
   });
 
   // Update a value
-  router.put('/<index>', (Request request, String index) {
-    return updateItemHandler(request, index, repo);
+  router.put('/<id>', (Request request, String id) {
+    return updateItemHandler(request, id, repo);
   });
 
   // Remove an item from the list
-  router.delete('/<index>', (Request request, String index) {
-    return removeItemHandler(request, index, repo);
-  });
-
-  // Get a specific item
-  router.get('/<id>', (Request request, String id) {
-    return getItemByIdHandler(request, id, repo);
+  router.delete('/<id>', (Request request, String id) {
+    return removeItemHandler(request, id, repo);
   });
 
   return router;

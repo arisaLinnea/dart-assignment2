@@ -1,40 +1,53 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dart_server/models/response_owner.dart';
 import 'package:dart_server/repositories/repository.dart';
+import 'package:dart_shared/dart_shared.dart';
+import 'package:drift/drift.dart';
+import 'package:dart_server/db/database.dart';
 
-class OwnerRepository extends Repository<ResponseOwner> {
+class OwnerRepository extends Repository<Owner> {
   static final OwnerRepository _instance = OwnerRepository._internal();
+  final database = ParkingDatabase();
 
   OwnerRepository._internal();
 
   factory OwnerRepository() => _instance;
 
   @override
-  ResponseOwner getElementById({required String id}) {
-    return getList().firstWhere((element) => element.id == id);
+  void addToList({required dynamic json}) async {
+    Owner owner = deserialize(json);
+    DBOwnersCompanion ownerComp = DBOwnersCompanion(
+      name: Value(owner.name),
+      ssn: Value(owner.ssn),
+    );
+
+    final result = await database.insertOwner(ownerComp);
   }
 
   @override
-  ResponseOwner deserialize(Map<String, dynamic> json) =>
-      ResponseOwner.fromJson(json);
+  Future<List<Map<String, dynamic>>> getList() async {
+    List<DBOwner> dbList = await database.getAllOwners();
 
-  @override
-  Map<String, dynamic> serialize(ResponseOwner item) => item.toJson();
-
-// TODO rewrite to use jsonDecode instead?
-  @override
-  void readJsonFile(String filePath) async {
-    const JsonDecoder decoder = JsonDecoder();
-    final storage = File(filePath);
-    var jsonString = storage.readAsStringSync();
-    final Map<String, dynamic> jsonmap = decoder.convert(jsonString);
-
-    List<dynamic> owners = jsonmap['owners'];
-
-    for (var item in owners) {
-      addToList(item: ResponseOwner.fromJson(item));
-    }
+    var list = dbList.map(serialize).toList();
+    return list;
   }
+
+  @override
+  void update({required String id, required dynamic json}) async {
+    Owner owner = deserialize(json);
+    DBOwnersCompanion ownerComp = DBOwnersCompanion(
+      id: Value(id),
+      name: Value(owner.name),
+      ssn: Value(owner.ssn),
+    );
+
+    final result = await database.updateOwner(ownerComp, id);
+  }
+
+  @override
+  void remove({required String id}) async {
+    await database.deleteOwner(id);
+  }
+
+  Owner deserialize(Map<String, dynamic> json) => Owner.fromJson(json);
+
+  Map<String, dynamic> serialize(DBOwner item) => item.toJson();
 }

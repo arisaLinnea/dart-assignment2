@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_client/models/owner.dart';
+import 'package:dart_shared/dart_shared.dart';
 import 'package:dart_client/repositories/repository.dart';
 
 class OwnerRepository extends Repository<Owner> {
@@ -13,14 +13,9 @@ class OwnerRepository extends Repository<Owner> {
   factory OwnerRepository() => _instance;
 
   @override
-  Future<Owner> getElementById({required String id}) async {
-    try {
-      return list.firstWhere((element) => element.id == id,
-          orElse: () => throw Exception('Owner not found'));
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+  Future<Owner> getElementById({required String id}) {
+    // TODO: implement getElementById
+    throw UnimplementedError();
   }
 
   @override
