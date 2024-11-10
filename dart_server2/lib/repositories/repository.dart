@@ -19,12 +19,17 @@ abstract class Repository<T> {
       {required File file, required String name}) async {
     String fileContentAsJson = await file.readAsString();
     Map<String, dynamic> jsonmap = {};
-    if (fileContentAsJson != "") {
-      jsonmap = jsonDecode(fileContentAsJson);
+    if (fileContentAsJson.isNotEmpty) {
+      try {
+        jsonmap = jsonDecode(fileContentAsJson);
+      } catch (e) {
+        throw FormatException('');
+      }
     }
+
     List<dynamic> jsonList = [];
 
-    if (jsonmap[name] != null) {
+    if (jsonmap.containsKey(name)) {
       jsonList = (jsonmap[name] as List);
     }
 
@@ -34,17 +39,19 @@ abstract class Repository<T> {
     };
   }
 
-  void addToList({required dynamic json});
+  Future<bool> addToList({required dynamic json});
 
   Future<T?> getElementById({required String id});
 
   Future<List<Map<String, dynamic>>> getList();
 
-  void update({required String id, required dynamic json});
+  Future<bool> update({required String id, required dynamic json});
 
-  void remove({required String id});
+  Future<bool> remove({required String id});
 
   T deserialize(Map<String, dynamic> json);
 
   Map<String, dynamic> serialize(T item);
+
+  String itemAsString();
 }

@@ -24,7 +24,7 @@ class Vehicle {
       id: json['id'],
       registrationNo: json['registrationNo'],
       type: VehicleType.values[typeIndex],
-      owner: Owner.fromJson(json['owner']),
+      owner: json['owner'] != null ? Owner.fromJson(json['owner']) : null,
     );
     return vehicle;
   }

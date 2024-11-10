@@ -15,8 +15,8 @@ List<String> userOptions = [
   '5. Go back to start screen',
   'q. Quit',
 ];
-List<Vehicle> vehicleList = [];
-List<ParkingLot> lotList = [];
+List<Vehicle>? vehicleList = [];
+List<ParkingLot>? lotList = [];
 ParkingRepository repository = ParkingRepository();
 VehicleRepository vehicleRepository = VehicleRepository();
 ParkingLotRepository parkingLotRepository = ParkingLotRepository();
@@ -38,7 +38,10 @@ Future<void> parkingScreen() async {
     printGreeting('You chose: ${userOptions.elementAt(userInput - 1)}');
     switch (userInput) {
       case 1: // add parking
-        if (vehicleList.isEmpty) {
+        if (vehicleList == null) {
+          print('Try again later');
+          break;
+        } else if (vehicleList == []) {
           print(
               'To add a parking you need a vehicle. Press any key to go back to main menu and choose to add a vehicle.');
           stdin.readLineSync();
@@ -46,7 +49,10 @@ Future<void> parkingScreen() async {
           userInput = 5;
           break;
         }
-        if (lotList.isEmpty) {
+        if (lotList == null) {
+          print('Try again later');
+          break;
+        } else if (lotList == []) {
           print(
               'To add a parking you need a parking lot. Press any key to go back to main menu and choose to add a parking lot.');
           stdin.readLineSync();
@@ -78,19 +84,19 @@ Future<void> addParkingScreen() async {
   int vehicleIndex = checkIntOption(
       question:
           'Enter number of the vehicle you would like to add to this parking: ',
-      maxNumber: vehicleList.length,
-      userOptions: vehicleList,
+      maxNumber: vehicleList?.length ?? 0,
+      userOptions: vehicleList ?? [],
       menu: false);
-  Vehicle vehicle = vehicleList[vehicleIndex - 1];
+  Vehicle? vehicle = vehicleList?[vehicleIndex - 1];
 
   printListInfo('This is the parking lots you can add:');
   int lotIndex = checkIntOption(
       question:
           'Enter number of the parking lot you would like to add to this parking: ',
-      maxNumber: lotList.length,
-      userOptions: lotList,
+      maxNumber: lotList?.length ?? 0,
+      userOptions: lotList ?? [],
       menu: false);
-  ParkingLot parkingLot = lotList[lotIndex - 1];
+  ParkingLot? parkingLot = lotList?[lotIndex - 1];
 
   DateTime startTime = DateTime.now();
 
@@ -113,16 +119,18 @@ Future<void> addParkingScreen() async {
       parkinglot: parkingLot,
       startTime: startTime,
       endTime: endTime);
-  await repository.addToList(item: newParking);
-  printAdd(newParking.toString());
+  bool success = await repository.addToList(item: newParking);
+  if (success) {
+    printAdd(newParking.toString());
+  }
   printContinue();
 }
 
 Future<void> showParkingListScreen() async {
-  List<Parking> parkingList = await repository.getList();
-  if (parkingList.isEmpty) {
+  List<Parking>? parkingList = await repository.getList();
+  if (parkingList != null && parkingList.isEmpty) {
     print('The list of parkings are empty');
-  } else {
+  } else if (parkingList != null) {
     for (var item in parkingList) {
       print("* $item");
     }
@@ -131,8 +139,10 @@ Future<void> showParkingListScreen() async {
 }
 
 Future<void> showUpdateParkingScreen() async {
-  List<Parking> parkingList = await repository.getList();
-  if (parkingList.isEmpty) {
+  List<Parking>? parkingList = await repository.getList();
+  if (parkingList == null) {
+    print('Try again later');
+  } else if (parkingList.isEmpty) {
     print('There is no parkings to edit.');
   } else {
     int editNo = checkIntOption(
@@ -145,16 +155,16 @@ Future<void> showUpdateParkingScreen() async {
     bool changeVehicle =
         checkBoolOption(question: 'Do you want to change vehicle? (y?): ');
     if (changeVehicle) {
-      if (vehicleList.isEmpty) {
+      if (vehicleList == null || vehicleList == []) {
         print('No vehicle to change to');
       } else {
         int vehicleIndex = checkIntOption(
             question:
                 'Enter number of the vehicle you would like to add to this vehicle: ',
-            maxNumber: vehicleList.length,
-            userOptions: vehicleList,
+            maxNumber: vehicleList?.length ?? 0,
+            userOptions: vehicleList ?? [],
             menu: false);
-        Vehicle vehicle = vehicleList[vehicleIndex - 1];
+        Vehicle? vehicle = vehicleList?[vehicleIndex - 1];
         editParking.vehicle = vehicle;
       }
     }
@@ -162,16 +172,16 @@ Future<void> showUpdateParkingScreen() async {
     bool changeLot =
         checkBoolOption(question: 'Do you want to change parking lot? (y?): ');
     if (changeLot) {
-      if (lotList.isEmpty) {
+      if (lotList == null || lotList == []) {
         print('No parking lot to change to');
       } else {
         int lotIndex = checkIntOption(
             question:
                 'Enter number of the parking lot you would like to add to this vehicle: ',
-            maxNumber: lotList.length,
-            userOptions: lotList,
+            maxNumber: lotList?.length ?? 0,
+            userOptions: lotList ?? [],
             menu: false);
-        ParkingLot parkinglot = lotList[lotIndex - 1];
+        ParkingLot? parkinglot = lotList?[lotIndex - 1];
         editParking.parkinglot = parkinglot;
       }
     }
@@ -193,16 +203,16 @@ Future<void> showUpdateParkingScreen() async {
     bool success = await repository.update(id: editId, item: editParking);
     if (success) {
       printAction('Parking has been updated.');
-    } else {
-      printError('Failed to update parking');
     }
   }
   printContinue();
 }
 
 Future<void> showRemoveParkingScreen() async {
-  List<Parking> parkingList = await repository.getList();
-  if (parkingList.isEmpty) {
+  List<Parking>? parkingList = await repository.getList();
+  if (parkingList == null) {
+    print('Try again later');
+  } else if (parkingList.isEmpty) {
     print('There is no parkings to remove.');
   } else {
     int removeNo = checkIntOption(
@@ -214,8 +224,6 @@ Future<void> showRemoveParkingScreen() async {
     bool success = await repository.remove(id: removeId);
     if (success) {
       printAction('List of parkings has been updated.');
-    } else {
-      printError('Failed to remove parking');
     }
   }
 

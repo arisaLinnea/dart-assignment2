@@ -37,7 +37,7 @@ class ParkingLotFactory {
   static Map<String, dynamic> toJsonServer(ParkingLot parkingLot) {
     return {
       'id': parkingLot.id,
-      'address': parkingLot.address.toJson(),
+      'address': parkingLot.address?.toJson(),
       'hourlyPrice': parkingLot.hourlyPrice
     };
   }

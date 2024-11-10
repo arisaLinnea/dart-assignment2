@@ -37,7 +37,7 @@ class ServerConfig {
 
   Handler wrongPathHandler() {
     Response rootHandler(Request req) {
-      return Response.notFound('Wrong path');
+      return Response.badRequest(body: 'Wrong path');
     }
 
     final router = Router()

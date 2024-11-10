@@ -19,20 +19,6 @@ class OwnerRepository extends Repository<Owner> {
   }
 
   @override
-  Future<void> readJsonFile(String filePath) async {
-    const JsonDecoder decoder = JsonDecoder();
-    final storage = File(filePath);
-    var jsonString = storage.readAsStringSync();
-    final Map<String, dynamic> jsonmap = decoder.convert(jsonString);
-
-    List<dynamic> owners = jsonmap['owners'];
-
-    for (var item in owners) {
-      addToList(item: Owner.fromJson(item));
-    }
-  }
-
-  @override
   Owner deserialize(Map<String, dynamic> json) => Owner.fromJson(json);
 
   @override

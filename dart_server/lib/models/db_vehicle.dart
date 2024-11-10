@@ -1,6 +1,7 @@
 import 'package:dart_shared/dart_shared.dart';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
+import 'package:dart_server/models/db_owner.dart';
 
 final _uuid = Uuid();
 

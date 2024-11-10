@@ -13,20 +13,6 @@ class ParkingRepository extends Repository<Parking> {
   factory ParkingRepository() => _instance;
 
   @override
-  Future<void> readJsonFile(String filePath) async {
-    const JsonDecoder decoder = JsonDecoder();
-    final storage = File(filePath);
-    var jsonString = storage.readAsStringSync();
-    final Map<String, dynamic> jsonmap = decoder.convert(jsonString);
-
-    List<dynamic> parkings = jsonmap['parkings'];
-
-    for (var item in parkings) {
-      addToList(item: Parking.fromJson(item));
-    }
-  }
-
-  @override
   Parking deserialize(Map<String, dynamic> json) => Parking.fromJson(json);
 
   @override

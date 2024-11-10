@@ -17,7 +17,7 @@ List<String> userOptions = [
 
 VehicleRepository repository = VehicleRepository();
 OwnerRepository ownerRepository = OwnerRepository();
-List<Owner> ownerList = [];
+List<Owner>? ownerList = [];
 
 Future<void> vehicleScreen() async {
   int? userInput;
@@ -36,7 +36,10 @@ Future<void> vehicleScreen() async {
     printGreeting('You chose: ${userOptions.elementAt(userInput - 1)}');
     switch (userInput) {
       case 1: // add vehicle
-        if (ownerList.isEmpty) {
+        if (ownerList == null) {
+          print('Try again later');
+          break;
+        } else if (ownerList == []) {
           print(
               'To add a vehicle you need an owner. Press any key to go back to main menu and choose to add an owner.');
           stdin.readLineSync();
@@ -78,22 +81,24 @@ Future<void> showAddVehicleScreen() async {
   int ownerIndex = checkIntOption(
       question:
           'Enter number of the owner you would like to add to this vehicle: ',
-      maxNumber: ownerList.length,
-      userOptions: ownerList,
+      maxNumber: ownerList?.length ?? 0,
+      userOptions: ownerList ?? [],
       menu: false);
-  Owner vehicleOwner = ownerList[ownerIndex - 1];
+  Owner? vehicleOwner = ownerList?[ownerIndex - 1];
   Vehicle newVehicle =
       Vehicle(registrationNo: registrationNo, type: type, owner: vehicleOwner);
-  await repository.addToList(item: newVehicle);
-  printAdd(newVehicle.toString());
+  bool success = await repository.addToList(item: newVehicle);
+  if (success) {
+    printAdd(newVehicle.toString());
+  }
   printContinue();
 }
 
 Future<void> showVehicleListScreen() async {
-  List<Vehicle> vehicleList = await repository.getList();
-  if (vehicleList.isEmpty) {
+  List<Vehicle>? vehicleList = await repository.getList();
+  if (vehicleList != null && vehicleList.isEmpty) {
     print('The list of vehicles are empty');
-  } else {
+  } else if (vehicleList != null) {
     for (var item in vehicleList) {
       print("* $item");
     }
@@ -102,8 +107,10 @@ Future<void> showVehicleListScreen() async {
 }
 
 Future<void> showUpdateVehicleScreen() async {
-  List<Vehicle> vehicleList = await repository.getList();
-  if (vehicleList.isEmpty) {
+  List<Vehicle>? vehicleList = await repository.getList();
+  if (vehicleList == null) {
+    print('Try again later');
+  } else if (vehicleList.isEmpty) {
     print('There is no vehicles to edit.');
   } else {
     int editNo = checkIntOption(
@@ -134,17 +141,17 @@ Future<void> showUpdateVehicleScreen() async {
     bool changeOwner =
         checkBoolOption(question: 'Do you want to change owner (y?): ');
     if (changeOwner) {
-      if (ownerList.isEmpty) {
+      if (ownerList == null || ownerList == []) {
         print('No owner to change to');
       } else {
         printListInfo('This is the owners you can add:');
         int ownerIndex = checkIntOption(
             question:
                 'Enter number of the owner you would like to add to this vehicle: ',
-            maxNumber: ownerList.length,
-            userOptions: ownerList,
+            maxNumber: ownerList?.length ?? 0,
+            userOptions: ownerList ?? [],
             menu: false);
-        Owner vehicleOwner = ownerList[ownerIndex - 1];
+        Owner? vehicleOwner = ownerList?[ownerIndex - 1];
         editVehicle.owner = vehicleOwner;
       }
     }
@@ -152,16 +159,16 @@ Future<void> showUpdateVehicleScreen() async {
     bool success = await repository.update(id: editId, item: editVehicle);
     if (success) {
       printAction('Vehicle has been updated.');
-    } else {
-      printError('Failed to update vehicle');
     }
   }
   printContinue();
 }
 
 Future<void> showRemoveVehicleScreen() async {
-  List<Vehicle> vehicleList = await repository.getList();
-  if (vehicleList.isEmpty) {
+  List<Vehicle>? vehicleList = await repository.getList();
+  if (vehicleList == null) {
+    print('Try again later');
+  } else if (vehicleList.isEmpty) {
     print('There is no vehicles to remove.');
   } else {
     int removeNo = checkIntOption(
@@ -173,8 +180,6 @@ Future<void> showRemoveVehicleScreen() async {
     bool success = await repository.remove(id: removeId);
     if (success) {
       printAction('List of vehicles has been updated.');
-    } else {
-      printError('Failed to remove vehicle');
     }
   }
 

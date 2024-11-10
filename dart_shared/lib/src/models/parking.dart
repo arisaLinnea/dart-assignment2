@@ -22,8 +22,11 @@ class Parking {
   factory Parking.fromJson(Map<String, dynamic> json) {
     return Parking(
         id: json['id'],
-        vehicle: Vehicle.fromJson(json['vehicle']),
-        parkinglot: ParkingLot.fromJson(json['parkinglot']),
+        vehicle:
+            json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
+        parkinglot: json['parkinglot'] != null
+            ? ParkingLot.fromJson(json['parkinglot'])
+            : null,
         startTime: DateTime.parse(json['startTime']),
         endTime:
             json['endTime'] != null ? DateTime.parse(json['startTime']) : null);

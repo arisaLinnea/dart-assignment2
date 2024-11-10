@@ -19,20 +19,6 @@ class ParkingLotRepository extends Repository<ParkingLot> {
   }
 
   @override
-  Future<void> readJsonFile(String filePath) async {
-    const JsonDecoder decoder = JsonDecoder();
-    final storage = File(filePath);
-    var jsonString = storage.readAsStringSync();
-    final Map<String, dynamic> jsonmap = decoder.convert(jsonString);
-
-    List<dynamic> parkinglots = jsonmap['parkinglots'];
-
-    for (var item in parkinglots) {
-      addToList(item: ParkingLot.fromJson(item));
-    }
-  }
-
-  @override
   ParkingLot deserialize(Map<String, dynamic> json) =>
       ParkingLot.fromJson(json);
 

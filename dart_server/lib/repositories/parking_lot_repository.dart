@@ -15,50 +15,114 @@ class ParkingLotRepository extends Repository<ParkingLot> {
 
   @override
   void addToList({required dynamic json}) async {
-    ParkingLot parkingLot = deserialize(json);
-    Address address = parkingLot.address;
-    DBAddressesCompanion addressComp = DBAddressesCompanion(
-        street: Value(address.street),
-        zipCode: Value(address.zipCode),
-        city: Value(address.city));
+    try {
+      ParkingLot parkingLot = deserialize(json);
+      if (parkingLot.hourlyPrice.isNaN ||
+          parkingLot.address == null ||
+          parkingLot.address?.street == null ||
+          parkingLot.address?.city == null ||
+          parkingLot.address?.zipCode == null) {
+        throw ArgumentError(
+            'Street, zipcode, city or hourlyPrice cannot be empty');
+      }
+      Address? address = parkingLot.address;
+      DBAddressesCompanion addressComp = DBAddressesCompanion(
+          street: Value(address?.street ?? ''),
+          zipCode: Value(address?.zipCode ?? ''),
+          city: Value(address?.city ?? ''));
 
-    final addressInDB = await database.insertAddress(addressComp);
-    final result = await database.insertParkingLot(DBParkinglotsCompanion(
-        addressId: Value(addressInDB.id),
-        hourlyPrice: Value(parkingLot.hourlyPrice)));
+      final addressInDB = await database.insertAddress(addressComp);
+      if (addressInDB == null) {
+        throw DatabaseException(
+            message: 'Failed to insert the address into the database');
+      }
+      DBParkinglotsCompanion parkinglotComp = DBParkinglotsCompanion(
+          addressId: Value(addressInDB.id),
+          hourlyPrice: Value(parkingLot.hourlyPrice));
+      final result = await database.insertParkingLot(parkinglotComp);
+      if (result == null) {
+        throw DatabaseException(
+            message:
+                'Failed to insert the parkinglot with id:${parkinglotComp.id} into the database');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<List<Map<String, dynamic>>> getList() async {
-    List<ParkingLot> dbList = await database.getAllParkingLotsWithAdress();
-    return dbList.map(ParkingLotFactory.toJsonServer).toList();
+    try {
+      List<ParkingLot> dbList = await database.getAllParkingLotsWithAdress();
+      return dbList.map(ParkingLotFactory.toJsonServer).toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   void update({required String id, required dynamic json}) async {
-    ParkingLot parkingLot = deserialize(json);
-    Address address = parkingLot.address;
-    DBAddressesCompanion addressComp = DBAddressesCompanion(
-        id: Value(address.id),
-        street: Value(address.street),
-        zipCode: Value(address.zipCode),
-        city: Value(address.city));
+    try {
+      ParkingLot parkingLot = deserialize(json);
+      if (parkingLot.hourlyPrice.isNaN ||
+          parkingLot.address == null ||
+          parkingLot.address?.street == null ||
+          parkingLot.address?.city == null ||
+          parkingLot.address?.zipCode == null) {
+        throw ArgumentError(
+            'Street, zipcode, city or hourlyPrice cannot be empty');
+      }
+      Address? address = parkingLot.address;
+      DBAddressesCompanion addressComp = DBAddressesCompanion(
+          id: Value(address?.id ?? '-1'),
+          street: Value(address?.street ?? ''),
+          zipCode: Value(address?.zipCode ?? ''),
+          city: Value(address?.city ?? ''));
 
-    DBParkinglotsCompanion parkComp = DBParkinglotsCompanion(
-        addressId: Value(address.id),
-        hourlyPrice: Value(parkingLot.hourlyPrice));
+      DBParkinglotsCompanion parkComp = DBParkinglotsCompanion(
+          addressId: Value(address?.id ?? '-1'),
+          hourlyPrice: Value(parkingLot.hourlyPrice));
 
-    final result = await database.updateAdress(addressComp, address.id);
-    final result2 = await database.updateParkinglot(parkComp, id);
+      final addressRowsUpdated =
+          await database.updateAdress(addressComp, address?.id ?? '-1');
+      if (addressRowsUpdated == 0) {
+        throw DatabaseException(
+            message: 'Failed to update the address in the database');
+      }
+      final parkinglotRowsUpdated =
+          await database.updateParkinglot(parkComp, id);
+
+      if (parkinglotRowsUpdated == 0) {
+        throw DatabaseException(
+            message:
+                'Failed to update the parkinglot with id:$id in the database');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   void remove({required String id}) async {
-    await database.deleteParkingLot(id);
+    try {
+      final result = await database.deleteParkingLot(id);
+      if (result == 0) {
+        throw DatabaseException(
+            message:
+                'Failed to delete the parkinglot with id:$id in the database');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   ParkingLot deserialize(Map<String, dynamic> json) =>
       ParkingLot.fromJson(json);
 
   Map<String, dynamic> serialize(DBParkinglot item) => item.toJson();
+
+  @override
+  String itemAsString() {
+    return 'Parkinglot';
+  }
 }

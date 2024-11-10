@@ -13,9 +13,9 @@ class ParkingLotFactory {
     return {
       'id': parkinglot.id != '-1' ? parkinglot.id : Uuid().v4(),
       'hourlyPrice': parkinglot.hourlyPrice,
-      'street': parkinglot.address.street,
-      'zipCode': parkinglot.address.zipCode,
-      'city': parkinglot.address.city
+      'street': parkinglot.address?.street,
+      'zipCode': parkinglot.address?.zipCode,
+      'city': parkinglot.address?.city
     };
   }
 }

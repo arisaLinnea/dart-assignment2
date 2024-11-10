@@ -56,17 +56,15 @@ Future<void> showAddOwnerScreen() async {
   bool success = await repository.addToList(item: newOwner);
   if (success) {
     printAdd(newOwner.toString());
-  } else {
-    printError('Failed to save owner');
   }
   printContinue();
 }
 
 Future<void> showOwnerListScreen() async {
-  List<Owner> ownerList = await repository.getList();
-  if (ownerList.isEmpty) {
+  List<Owner>? ownerList = await repository.getList();
+  if (ownerList != null && ownerList.isEmpty) {
     print('The list of owners are empty');
-  } else {
+  } else if (ownerList != null) {
     for (var item in ownerList) {
       print('* $item');
     }
@@ -75,8 +73,10 @@ Future<void> showOwnerListScreen() async {
 }
 
 Future<void> showUpdateOwnerScreen() async {
-  List<Owner> ownerList = await repository.getList();
-  if (ownerList.isEmpty) {
+  List<Owner>? ownerList = await repository.getList();
+  if (ownerList == null) {
+    print('Try again later');
+  } else if (ownerList.isEmpty) {
     print('There is no owners to edit.');
   } else {
     int editNo = checkIntOption(
@@ -103,16 +103,16 @@ Future<void> showUpdateOwnerScreen() async {
     bool success = await repository.update(id: editId, item: editOwner);
     if (success) {
       printAction('Owner has been updated');
-    } else {
-      printError('Failed to update owner');
     }
   }
   printContinue();
 }
 
 Future<void> showRemoveOwnerScreen() async {
-  List<Owner> ownerList = await repository.getList();
-  if (ownerList.isEmpty) {
+  List<Owner>? ownerList = await repository.getList();
+  if (ownerList == null) {
+    print('Try again later');
+  } else if (ownerList.isEmpty) {
     print('There is no owners to remove.');
   } else {
     int removeNo = checkIntOption(
@@ -124,8 +124,6 @@ Future<void> showRemoveOwnerScreen() async {
     bool success = await repository.remove(id: removeId);
     if (success) {
       printAction('List of owners has been updated.');
-    } else {
-      printError('Failed to remove owner');
     }
   }
   printContinue();

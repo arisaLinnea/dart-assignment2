@@ -20,57 +20,69 @@ class ParkingDatabase extends _$ParkingDatabase {
   int get schemaVersion => 1;
 
   Vehicle _mapToVehicle(TypedResult result) {
-    DBOwner owner = result.readTable(dBOwners);
+    DBOwner? owner = result.readTableOrNull(dBOwners);
     DBVehicle vehicle = result.readTable(dBVehicles);
     return Vehicle(
         id: vehicle.id,
         registrationNo: vehicle.registrationNo,
         type: VehicleType.values[vehicle.type],
-        owner: Owner(id: owner.id, name: owner.name, ssn: owner.ssn));
+        owner: owner != null
+            ? Owner(id: owner.id, name: owner.name, ssn: owner.ssn)
+            : null);
   }
 
   ParkingLot _mapToParkingLot(TypedResult result) {
-    DBAddress address = result.readTable(dBAddresses);
+    DBAddress? address = result.readTableOrNull(dBAddresses);
     DBParkinglot parkinglot = result.readTable(dBParkinglots);
     return ParkingLot(
         id: parkinglot.id,
         hourlyPrice: parkinglot.hourlyPrice,
-        address: Address(
-            id: address.id,
-            street: address.street,
-            zipCode: address.zipCode,
-            city: address.city));
+        address: address != null
+            ? Address(
+                id: address.id,
+                street: address.street,
+                zipCode: address.zipCode,
+                city: address.city)
+            : null);
   }
 
   Parking _mapToVParking(TypedResult result) {
-    DBVehicle vehicle = result.readTable(dBVehicles);
-    DBOwner owner = result.readTable(dBOwners);
-    DBParkinglot parkinglot = result.readTable(dBParkinglots);
-    DBAddress address = result.readTable(dBAddresses);
+    DBVehicle? vehicle = result.readTableOrNull(dBVehicles);
+    DBOwner? owner = result.readTableOrNull(dBOwners);
+    DBParkinglot? parkinglot = result.readTableOrNull(dBParkinglots);
+    DBAddress? address = result.readTableOrNull(dBAddresses);
     DBParking parking = result.readTable(dBParkings);
     return Parking(
         id: parking.id,
         startTime: parking.startTime,
         endTime: parking.endTime,
-        vehicle: Vehicle(
-            id: vehicle.id,
-            registrationNo: vehicle.registrationNo,
-            type: VehicleType.values[vehicle.type],
-            owner: Owner(id: owner.id, name: owner.name, ssn: owner.ssn)),
-        parkinglot: ParkingLot(
-            id: parkinglot.id,
-            address: Address(
-                id: address.id,
-                street: address.street,
-                zipCode: address.zipCode,
-                city: address.city),
-            hourlyPrice: parkinglot.hourlyPrice));
+        vehicle: vehicle != null
+            ? Vehicle(
+                id: vehicle.id,
+                registrationNo: vehicle.registrationNo,
+                type: VehicleType.values[vehicle.type],
+                owner: owner != null
+                    ? Owner(id: owner.id, name: owner.name, ssn: owner.ssn)
+                    : null)
+            : null,
+        parkinglot: parkinglot != null
+            ? ParkingLot(
+                id: parkinglot.id,
+                address: address != null
+                    ? Address(
+                        id: address.id,
+                        street: address.street,
+                        zipCode: address.zipCode,
+                        city: address.city)
+                    : null,
+                hourlyPrice: parkinglot.hourlyPrice)
+            : null);
   }
 
   // Owner
   Future insertOwner(Insertable<DBOwner> user) => into(dBOwners).insert(user);
   Future<List<DBOwner>> getAllOwners() => select(dBOwners).get();
-  Future<void> deleteOwner(String id) {
+  Future<int> deleteOwner(String id) {
     return (delete(dBOwners)..where((owner) => owner.id.equals(id))).go();
   }
 
@@ -82,10 +94,12 @@ class ParkingDatabase extends _$ParkingDatabase {
   Future insertVehicle(Insertable<DBVehicle> vehicle) =>
       into(dBVehicles).insert(vehicle);
   Future<List<DBVehicle>> getAllVehicles() => select(dBVehicles).get();
-  Future<List<Vehicle>> getAllVehiclesWithOwner() {
+  Future<List<Vehicle>> getAllVehiclesWithOwner() async {
     final query = select(dBVehicles);
     final vehiclesWithOwner = query
-        .join([innerJoin(dBOwners, dBOwners.id.equalsExp(dBVehicles.ownerId))])
+        .join([
+          leftOuterJoin(dBOwners, dBOwners.id.equalsExp(dBVehicles.ownerId))
+        ])
         .map(_mapToVehicle)
         .get();
     return vehiclesWithOwner;
@@ -95,7 +109,7 @@ class ParkingDatabase extends _$ParkingDatabase {
       (update(dBVehicles)..where((vehicle) => vehicle.id.equals(id)))
           .write(vehicleToUpdate);
 
-  Future<void> deleteVehicle(String id) {
+  Future<int> deleteVehicle(String id) {
     return (delete(dBVehicles)..where((vehicle) => vehicle.id.equals(id))).go();
   }
 
@@ -109,7 +123,7 @@ class ParkingDatabase extends _$ParkingDatabase {
     final query = select(dBParkinglots);
     final parkingLotsWithAdress = query
         .join([
-          innerJoin(
+          leftOuterJoin(
               dBAddresses, dBAddresses.id.equalsExp(dBParkinglots.addressId)),
         ])
         .map(_mapToParkingLot)
@@ -151,11 +165,12 @@ class ParkingDatabase extends _$ParkingDatabase {
     final query = select(dBParkings);
     final parkingsWithObjectData = query
         .join([
-          innerJoin(dBVehicles, dBVehicles.id.equalsExp(dBParkings.vehicleId)),
-          innerJoin(dBOwners, dBOwners.id.equalsExp(dBVehicles.ownerId)),
-          innerJoin(dBParkinglots,
+          leftOuterJoin(
+              dBVehicles, dBVehicles.id.equalsExp(dBParkings.vehicleId)),
+          leftOuterJoin(dBOwners, dBOwners.id.equalsExp(dBVehicles.ownerId)),
+          leftOuterJoin(dBParkinglots,
               dBParkinglots.id.equalsExp(dBParkings.parkingLotId)),
-          innerJoin(
+          leftOuterJoin(
               dBAddresses, dBAddresses.id.equalsExp(dBParkinglots.addressId))
         ])
         .map(_mapToVParking)
@@ -166,7 +181,7 @@ class ParkingDatabase extends _$ParkingDatabase {
   Future<int> updateParking(Insertable<DBParking> parkingToUpdate, String id) =>
       (update(dBParkings)..where((parking) => parking.id.equals(id)))
           .write(parkingToUpdate);
-  Future<void> deleteParking(String id) {
+  Future<int> deleteParking(String id) {
     return (delete(dBParkings)..where((parking) => parking.id.equals(id))).go();
   }
 }

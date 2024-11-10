@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_client/utils/effects.dart';
 import 'package:http/http.dart' as http;
 
 abstract class Repository<T> {
@@ -22,11 +23,13 @@ abstract class Repository<T> {
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to add to list');
+      var body = jsonDecode(response.body);
+      printError('${body['message']}');
+      return false;
     }
   }
 
-  Future<List<T>> getList() async {
+  Future<List<T>?> getList() async {
     Uri updatedUri = uri.replace(path: '/api/$_path');
     final response = await http.get(
       updatedUri,
@@ -37,7 +40,9 @@ abstract class Repository<T> {
       final json = jsonDecode(response.body);
       return (json as List).map((item) => deserialize(item)).toList();
     } else {
-      throw Exception('Failed to get list');
+      var body = jsonDecode(response.body);
+      printError('${body['message']}');
+      return null;
     }
   }
 
@@ -49,7 +54,9 @@ abstract class Repository<T> {
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to update');
+      var body = jsonDecode(response.body);
+      printError('${body['message']}');
+      return false;
     }
   }
 
@@ -60,9 +67,9 @@ abstract class Repository<T> {
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw Exception('Failed to remove from list');
+      var body = jsonDecode(response.body);
+      printError('${body['message']}');
+      return false;
     }
   }
-
-  Future<void> readJsonFile(String filePath);
 }

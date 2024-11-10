@@ -20,20 +20,6 @@ class VehicleRepository extends Repository<Vehicle> {
   }
 
   @override
-  Future<void> readJsonFile(String filePath) async {
-    const JsonDecoder decoder = JsonDecoder();
-    final storage = File(filePath);
-    var jsonString = storage.readAsStringSync();
-    final Map<String, dynamic> jsonmap = decoder.convert(jsonString);
-
-    List<dynamic> vehicles = jsonmap['vehicles'];
-
-    for (var item in vehicles) {
-      addToList(item: Vehicle.fromJson(item));
-    }
-  }
-
-  @override
   Vehicle deserialize(Map<String, dynamic> json) => Vehicle.fromJson(json);
 
   @override

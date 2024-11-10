@@ -32,7 +32,7 @@ class Address {
 
 class ParkingLot {
   String? _id;
-  Address address;
+  Address? address;
   double hourlyPrice;
 
   ParkingLot({required this.address, required this.hourlyPrice, String? id})
@@ -43,12 +43,13 @@ class ParkingLot {
   factory ParkingLot.fromJson(Map<String, dynamic> json) {
     return ParkingLot(
         id: json['id'],
-        address: Address.fromJson(json['address']),
+        address:
+            json['address'] != null ? Address.fromJson(json['address']) : null,
         hourlyPrice: json['hourlyPrice']);
   }
 
   Map<String, dynamic> toJson() =>
-      {'id': _id, 'address': address.toJson(), 'hourlyPrice': hourlyPrice};
+      {'id': _id, 'address': address?.toJson(), 'hourlyPrice': hourlyPrice};
 
   @override
   String toString() {

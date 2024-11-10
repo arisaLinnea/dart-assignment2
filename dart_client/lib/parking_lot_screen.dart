@@ -59,16 +59,18 @@ Future<void> showAddParkingLotScreen() async {
       checkDoubleOption(question: 'Hourly price for this parking lot: ');
 
   ParkingLot newLot = ParkingLot(address: address, hourlyPrice: hourlyPrice);
-  await repository.addToList(item: newLot);
-  printAdd(newLot.toString());
+  bool success = await repository.addToList(item: newLot);
+  if (success) {
+    printAdd(newLot.toString());
+  }
   printContinue();
 }
 
 Future<void> showParkingLotListScreen() async {
-  List<ParkingLot> lotList = await repository.getList();
-  if (lotList.isEmpty) {
+  List<ParkingLot>? lotList = await repository.getList();
+  if (lotList != null && lotList.isEmpty) {
     print('The list of parking lots are empty');
-  } else {
+  } else if (lotList != null) {
     for (var item in lotList) {
       print("* $item");
     }
@@ -77,9 +79,10 @@ Future<void> showParkingLotListScreen() async {
 }
 
 Future<void> showUpdateParkingLotScreen() async {
-  List<ParkingLot> lotList = await repository.getList();
-
-  if (lotList.isEmpty) {
+  List<ParkingLot>? lotList = await repository.getList();
+  if (lotList == null) {
+    print('Try again later');
+  } else if (lotList.isEmpty) {
     print('There is no parking lots to edit.');
   } else {
     int editNo = checkIntOption(
@@ -99,7 +102,7 @@ Future<void> showUpdateParkingLotScreen() async {
       String city =
           checkInputStringValues(question: 'City for the parking lot: ');
       Address address = Address(
-          id: editLot.address.id,
+          id: editLot.address?.id,
           street: streetName,
           zipCode: zipCode,
           city: city);
@@ -116,16 +119,16 @@ Future<void> showUpdateParkingLotScreen() async {
     bool success = await repository.update(id: editId, item: editLot);
     if (success) {
       printAction('Parkinglot has been updated.');
-    } else {
-      printError('Failed to update parkinglot');
     }
   }
   printContinue();
 }
 
 Future<void> showRemoveParkingLotScreen() async {
-  List<ParkingLot> lotList = await repository.getList();
-  if (lotList.isEmpty) {
+  List<ParkingLot>? lotList = await repository.getList();
+  if (lotList == null) {
+    print('Try again later');
+  } else if (lotList.isEmpty) {
     print('There is no parking lots to remove.');
   } else {
     int removeNo = checkIntOption(
@@ -137,8 +140,6 @@ Future<void> showRemoveParkingLotScreen() async {
     bool success = await repository.remove(id: removeId);
     if (success) {
       printAction('List of parkinglots has been updated.');
-    } else {
-      printError('Failed to remove parkinglot');
     }
   }
 
