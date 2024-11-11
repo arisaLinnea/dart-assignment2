@@ -18,6 +18,7 @@ dependencies:
   path: ^1.8.0
   dart_shared:
     path: "../dart_shared"
+  logger: ^2.4.0
 
 dev_dependencies:
   http: ^0.13.0

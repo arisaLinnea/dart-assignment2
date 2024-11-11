@@ -8,6 +8,8 @@ import 'dart:io' as _i6;
 
 import 'package:dart_server2/repositories/owner_repository.dart' as _i3;
 import 'package:dart_shared/dart_shared.dart' as _i2;
+import 'package:logger/src/log_level.dart' as _i8;
+import 'package:logger/src/logger.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
 
@@ -165,4 +167,222 @@ class MockOwnerRepository extends _i1.Mock implements _i3.OwnerRepository {
         returnValue:
             _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i5.Future<Map<String, dynamic>>);
+}
+
+/// A class which mocks [Logger].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLogger extends _i1.Mock implements _i7.Logger {
+  MockLogger() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<void> get init => (super.noSuchMethod(
+        Invocation.getter(#init),
+        returnValue: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  void v(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #v,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void t(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #t,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void d(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #d,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void i(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #i,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void w(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #w,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void e(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #e,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void wtf(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #wtf,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void f(
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #f,
+          [message],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void log(
+    _i8.Level? level,
+    dynamic message, {
+    DateTime? time,
+    Object? error,
+    StackTrace? stackTrace,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #log,
+          [
+            level,
+            message,
+          ],
+          {
+            #time: time,
+            #error: error,
+            #stackTrace: stackTrace,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  bool isClosed() => (super.noSuchMethod(
+        Invocation.method(
+          #isClosed,
+          [],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i5.Future<void> close() => (super.noSuchMethod(
+        Invocation.method(
+          #close,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }

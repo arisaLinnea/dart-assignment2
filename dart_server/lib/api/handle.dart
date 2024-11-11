@@ -1,9 +1,31 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:logger/logger.dart';
 
 import 'package:dart_server/repositories/repository.dart';
 import 'package:dart_shared/dart_shared.dart';
 import 'package:shelf/shelf.dart';
+
+var logger = Logger();
+
+Response handleError(Object e, {String? customMessage}) {
+  String message = customMessage ?? 'An unexpected error occurred';
+  if (e is FormatException) {
+    return Response.badRequest(
+        body: jsonEncode({'message': 'Invalid JSON format'}));
+  } else if (e is IOException) {
+    return Response.internalServerError(
+        body: jsonEncode({'message': 'Error reading request data'}));
+  } else if (e is ArgumentError) {
+    return Response.badRequest(body: jsonEncode({'message': '${e.message}'}));
+  } else if (e is DatabaseException) {
+    return Response.internalServerError(
+        body: jsonEncode({'message': e.toString()}));
+  } else {
+    return Response.internalServerError(
+        body: jsonEncode({'message': message, 'error': e.toString()}));
+  }
+}
 
 Future<Response> addItemHandler(Request request, Repository repo) async {
   try {
@@ -13,28 +35,9 @@ Future<Response> addItemHandler(Request request, Repository repo) async {
 
     return Response.ok(null);
   } catch (e) {
-    if (e is FormatException) {
-      //jsonDecode
-      return Response.badRequest(
-          body: jsonEncode({'message': 'Invalid JSON format'}));
-    } else if (e is IOException) {
-      //readAsString
-      return Response.internalServerError(
-          body: jsonEncode({'message': 'Error reading request data'}));
-    } else if (e is ArgumentError) {
-      //some value in the input json is missing
-      return Response.badRequest(body: jsonEncode({'message': '${e.message}'}));
-    } else if (e is DatabaseException) {
-      //database error
-      return Response.internalServerError(
-          body: jsonEncode({'message': e.toString()}));
-    } else {
-      return Response.internalServerError(
-          body: jsonEncode({
-        'message': 'Unexpected error when saving new ${repo.itemAsString()}',
-        'error': 'An unexpected error occurred: ${e.toString()}'
-      }));
-    }
+    logger.e("Error adding item to list of ${repo.itemAsString()}s: $e");
+    return handleError(e,
+        customMessage: 'Failed to add ${repo.itemAsString()}');
   }
 }
 
@@ -46,6 +49,7 @@ Future<Response> getListHandler(Request request, Repository repo) async {
       headers: {'Content-Type': 'application/json'},
     );
   } catch (e) {
+    logger.e("Error fetching item: $e");
     return Response.internalServerError(
         body: jsonEncode({
       'message':
@@ -65,28 +69,10 @@ Future<Response> updateItemHandler(
 
     return Response.ok(null);
   } catch (e) {
-    if (e is FormatException) {
-      //jsonDecode
-      return Response.badRequest(
-          body: jsonEncode({'message': 'Invalid JSON format'}));
-    } else if (e is IOException) {
-      //readAsString
-      return Response.internalServerError(
-          body: jsonEncode({'message': 'Error reading request data'}));
-    } else if (e is ArgumentError) {
-      //some value in the input json is missing
-      return Response.badRequest(body: jsonEncode({'message': '${e.message}'}));
-    } else if (e is DatabaseException) {
-      //database error
-      return Response.internalServerError(
-          body: jsonEncode({'message': e.toString()}));
-    } else {
-      return Response.internalServerError(
-          body: jsonEncode({
-        'message': 'Unexpected error when updating ${repo.itemAsString()}',
-        'error': 'An unexpected error occurred: ${e.toString()}'
-      }));
-    }
+    logger.e(
+        "Error updating item with ID $id in list of ${repo.itemAsString()}s: $e");
+    return handleError(e,
+        customMessage: 'updating ${repo.itemAsString()} with ID $id');
   }
 }
 
@@ -96,16 +82,9 @@ Future<Response> removeItemHandler(
     repo.remove(id: id);
     return Response.ok(null);
   } catch (e) {
-    if (e is DatabaseException) {
-      //database error
-      return Response.internalServerError(
-          body: jsonEncode({'message': e.toString()}));
-    } else {
-      return Response.internalServerError(
-          body: jsonEncode({
-        'message': 'Unexpected error when deleteing ${repo.itemAsString()}',
-        'error': 'An unexpected error occurred: ${e.toString()}'
-      }));
-    }
+    logger.e(
+        "Error deleting item with ID $id in list of ${repo.itemAsString()}s: $e");
+    return handleError(e,
+        customMessage: 'deleting ${repo.itemAsString()} with ID $id');
   }
 }

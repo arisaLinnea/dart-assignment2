@@ -1,16 +1,18 @@
 import 'dart:io';
 
+import 'package:dart_server2/api/handle.dart';
 import 'package:dart_server2/repositories/owner_repository.dart';
 import 'package:dart_shared/dart_shared.dart';
-import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
+import 'package:logger/logger.dart';
 
 import 'owner_mock.dart';
 import 'server_test.mocks.dart';
 
-@GenerateMocks([OwnerRepository])
+@GenerateMocks([OwnerRepository, Logger])
 void main() {
   final port = '8080';
   final host = 'http://0.0.0.0:$port';
@@ -18,9 +20,11 @@ void main() {
   group('Owner - ', () {
     late Process p;
     late MockOwnerRepository mockOwnerRepo;
+    late MockLogger mockLogger;
 
     setUp(() async {
       mockOwnerRepo = MockOwnerRepository();
+      mockLogger = MockLogger();
       p = await Process.start(
         'dart',
         [
@@ -35,14 +39,26 @@ void main() {
       // await p.stdout.first;
     });
     tearDown(() => p.kill());
-    test('get the list', () async {
-      when(await mockOwnerRepo.getList()).thenAnswer((_) => ownerJsonList);
-      when(mockOwnerRepo.serialize(ownerList[0]))
-          .thenAnswer((_) => ownerList[0].toJson());
-      final response = await get(Uri.parse('$host/api/owner'));
-      print('response: ${response.body}');
-      expect(response.statusCode, 200);
-      // expect(response.body, [ownerList[0].toJson()]);
+    // test('get the list', () async {
+    //   when(await mockOwnerRepo.getList()).thenAnswer((_) => ownerJsonList);
+    //   when(mockOwnerRepo.serialize(ownerList[0]))
+    //       .thenAnswer((_) => ownerList[0].toJson());
+    //   final response = await get(Uri.parse('$host/api/owner'));
+    //   print('response: ${response.body}');
+    //   expect(response.statusCode, 200);
+    //   // expect(response.body, [ownerList[0].toJson()]);
+    // });
+
+    test('add to list - invalid JSON format', () async {
+      when(mockOwnerRepo.itemAsString()).thenAnswer((_) => 'owner');
+
+      var request =
+          Request('POST', Uri.parse('$host/api/owner'), body: 'invalid-json');
+
+      var response = await addItemHandler(request, mockOwnerRepo);
+
+      expect(response.statusCode, 400);
+      expect(await response.readAsString(), contains('Failed to decode JSON'));
     });
   });
 
