@@ -34,16 +34,16 @@ class ServerConfig {
   }
 
   Handler wrongPathHandler() {
-    Response _rootHandler(Request req) {
+    Response rootHandler(Request req) {
       return Response.notFound('Wrong path');
     }
 
     final router = Router()
-      ..get('/', _rootHandler)
-      ..post('/', _rootHandler)
-      ..put('/', _rootHandler)
-      ..delete('/', _rootHandler);
+      ..get('/', rootHandler)
+      ..post('/', rootHandler)
+      ..put('/', rootHandler)
+      ..delete('/', rootHandler);
 
-    return router;
+    return router.call;
   }
 }

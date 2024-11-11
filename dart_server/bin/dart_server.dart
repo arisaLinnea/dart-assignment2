@@ -21,4 +21,11 @@ void main(List<String> args, {Repository? mockRepo}) async {
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final server = await serve(handler, ip, port);
   print('Server listening on port ${server.port}');
+
+  ProcessSignal.sigint.watch().listen((ProcessSignal signal) async {
+    print('Shutdown. Bye!');
+    server.close(force: true);
+    await ServerConfig.instance.database.close();
+    exit(0);
+  });
 }

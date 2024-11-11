@@ -187,6 +187,6 @@ class ParkingDatabase extends _$ParkingDatabase {
 }
 
 LazyDatabase _openConnection() {
-  final file = File(join(Directory.current.path, 'storage.db'));
+  final file = File(join(Directory.current.path, 'lib/db/storage.db'));
   return LazyDatabase(() async => NativeDatabase(file));
 }

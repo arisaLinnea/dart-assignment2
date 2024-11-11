@@ -23,11 +23,5 @@ class VehicleRepository extends Repository<Vehicle> {
   Vehicle deserialize(Map<String, dynamic> json) => Vehicle.fromJson(json);
 
   @override
-  Map<String, dynamic> serialize(Vehicle item) {
-    print('serialize client: ${item.toString()}');
-    Map<String, dynamic> s = item.toJson();
-    print('toJson client: $s');
-
-    return s;
-  }
+  Map<String, dynamic> serialize(Vehicle item) => item.toJson();
 }

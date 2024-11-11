@@ -1,11 +1,58 @@
 {
-  "owners": [],
+  "owners": [
+    {
+      "id": "7ee5b2d5-7bfe-4ba3-8dab-9a7fc581e9eb",
+      "name": "Ida Lindell",
+      "ssn": "8203128502"
+    },
+    {
+      "id": "13cd44c8-b05a-438c-81d9-568718ac6837",
+      "name": "Lars Lindell",
+      "ssn": "8204041530"
+    },
+    {
+      "id": "4bb9dbb1-2227-42e6-971e-9cd406006a5c",
+      "name": "Göthe Lindahl",
+      "ssn": "5405231234"
+    }
+  ],
   "vehicles": [
     {
-      "id": "1e093b4f-2c27-4955-bb33-dd3442dbba5a",
-      "registrationNo": "ert567",
+      "id": "e87ae45f-04a2-41cc-a286-5e03633f4617",
+      "registrationNo": "ABC123",
+      "type": 0,
+      "ownerId": "7ee5b2d5-7bfe-4ba3-8dab-9a7fc581e9eb"
+    },
+    {
+      "id": "fa63844d-d26d-4530-a862-0184fb7b7337",
+      "registrationNo": "IDA888",
       "type": 3,
-      "ownerId": "5a36280c-dcf1-4b10-8446-931f675e7609"
+      "ownerId": "13cd44c8-b05a-438c-81d9-568718ac6837"
+    }
+  ],
+  "parkinglots": [
+    {
+      "id": "78ff975e-8c76-4029-82b6-053f09f764df",
+      "hourlyPrice": 5.0,
+      "street": "Falkvägen 4",
+      "zipCode": "74635",
+      "city": "Bålsta"
+    },
+    {
+      "id": "f85fb7e5-58c7-4340-b388-8c0d7080b93b",
+      "hourlyPrice": 12.0,
+      "street": "Storgatan 80",
+      "zipCode": "90333",
+      "city": "Umeå"
+    }
+  ],
+  "parkings": [
+    {
+      "id": "3c7d5d20-32e3-43dc-a0f6-b8985ad7519c",
+      "vehicleId": "fa63844d-d26d-4530-a862-0184fb7b7337",
+      "parkinglotId": "f85fb7e5-58c7-4340-b388-8c0d7080b93b",
+      "startTime": "2024-11-11T07:45:58.627616",
+      "endTime": null
     }
   ]
 }
