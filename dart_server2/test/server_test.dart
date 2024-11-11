@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_server2/api/handle.dart';
@@ -17,10 +18,11 @@ void main() {
   final port = '8080';
   final host = 'http://0.0.0.0:$port';
 
-  group('Owner - ', () {
+  group('Add owner - ', () {
     late Process p;
     late MockOwnerRepository mockOwnerRepo;
     late MockLogger mockLogger;
+    Request mockRequest;
 
     setUp(() async {
       mockOwnerRepo = MockOwnerRepository();
@@ -49,16 +51,42 @@ void main() {
     //   // expect(response.body, [ownerList[0].toJson()]);
     // });
 
-    test('add to list - invalid JSON format', () async {
+    test('add to list -  should return 200 on success', () async {
+      when(mockOwnerRepo.itemAsString()).thenAnswer((_) => 'owner');
+      when(mockOwnerRepo.addToList(json: anyNamed('json')))
+          .thenAnswer((_) async => true);
+
+      mockRequest = Request('POST', Uri.parse('$host/api/owner'),
+          body: jsonEncode(owner.toJson()));
+
+      var response = await addItemHandler(mockRequest, mockOwnerRepo);
+
+      expect(response.statusCode, 200);
+    });
+
+    test('add to list - decode error', () async {
       when(mockOwnerRepo.itemAsString()).thenAnswer((_) => 'owner');
 
-      var request =
+      mockRequest =
           Request('POST', Uri.parse('$host/api/owner'), body: 'invalid-json');
 
-      var response = await addItemHandler(request, mockOwnerRepo);
+      var response = await addItemHandler(mockRequest, mockOwnerRepo);
 
       expect(response.statusCode, 400);
       expect(await response.readAsString(), contains('Failed to decode JSON'));
+    });
+    test('add to list - file error', () async {
+      when(mockOwnerRepo.itemAsString()).thenAnswer((_) => 'owner');
+      when(mockOwnerRepo.addToList(json: anyNamed('json')))
+          .thenThrow(FileSystemException('File error'));
+
+      mockRequest = Request('POST', Uri.parse('$host/api/owner'),
+          body: jsonEncode(owner.toJson()));
+
+      var response = await addItemHandler(mockRequest, mockOwnerRepo);
+
+      expect(response.statusCode, 500);
+      expect(await response.readAsString(), contains('Error with file'));
     });
   });
 

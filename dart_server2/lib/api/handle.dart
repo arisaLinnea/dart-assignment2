@@ -13,14 +13,14 @@ Response handleError(Object e, {String? customMessage}) {
     //jsonDecode
     return Response.badRequest(
         body: jsonEncode({'message': 'Failed to decode JSON'}));
-  } else if (e is IOException) {
-    //readAsString
-    return Response.internalServerError(
-        body: jsonEncode({'message': 'Error reading request data'}));
   } else if (e is FileSystemException) {
     // Handle file-related errors (e.g., file not found, permission issues)
     return Response.internalServerError(
         body: jsonEncode({'message': 'Error with file'}));
+  } else if (e is IOException) {
+    //readAsString
+    return Response.internalServerError(
+        body: jsonEncode({'message': 'Error reading request data'}));
   } else if (e is StateError) {
     // Handle null or unexpected data structures
     return Response.internalServerError(
