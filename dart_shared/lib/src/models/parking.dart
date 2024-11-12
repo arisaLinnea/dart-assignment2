@@ -47,6 +47,8 @@ class Parking {
     String formattedStartDate = formatter.format(startTime);
     String? formattedEndDate =
         endTime != null ? formatter.format(endTime!) : null;
-    return 'Vehicle: ${vehicle.toString()}, Parking lot: ${parkinglot.toString()}, Starttime: $formattedStartDate, Endtime: ${formattedEndDate ?? '-'}';
+    String vehicleString = vehicle != null ? vehicle.toString() : 'Vehicle is missing';
+    String parkinglotString = parkinglot != null ? parkinglot.toString() : 'Parkinglot is missing';
+    return 'Vehicle: $vehicleString, Parking lot: $parkinglotString, Starttime: $formattedStartDate, Endtime: ${formattedEndDate ?? '-'}';
   }
 }

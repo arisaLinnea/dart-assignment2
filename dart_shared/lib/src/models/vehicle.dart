@@ -38,6 +38,7 @@ class Vehicle {
 
   @override
   String toString() {
-    return 'RegistrationNo: $registrationNo, type: $type, owner: (${owner.toString()})';
+    String ownerString = owner != null ? owner.toString() : 'Owner is missing';
+    return 'RegistrationNo: $registrationNo, type: $type, owner: ($ownerString)';
   }
 }

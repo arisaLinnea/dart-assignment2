@@ -23,7 +23,7 @@ class Owner {
 
   @override
   String toString() {
-    return 'Name: $name, ssn: $ssn, id: $_id';
+    return 'Name: $name, ssn: $ssn';
   }
 
   bool isValid() {
